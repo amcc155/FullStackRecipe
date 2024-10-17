@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import { Container, Box, Typography, Button, ButtonGroup } from "@mui/material";
+import SearchModal from "../components/SearchModal";
 const HomePage = () => {
+    const[isSearching, setIsSearching] = useState(false)
   return (
     <>
       <Container
@@ -33,14 +36,17 @@ const HomePage = () => {
             <Button component={Link} to="/random/daily">
               Daily Randoms
             </Button>
-            <Button> Start Searching </Button>
+            <Button component = {Link} to = "/advanced/search">
+                Start Searching
+                </Button>
           </ButtonGroup>
         </Box>
 
           {/* Start of featured REcipes component */}
           {/* <Typography variant = 'h5'> Some foods you may like </Typography> */}
-
+       
       </Container>
+      
     </>
   );
 };

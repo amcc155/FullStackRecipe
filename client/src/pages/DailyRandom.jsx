@@ -1,13 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import {
-  List,
-  ListItem,
-  Card,
-  CardContent,
-  CardHeader,
-  Avatar,
-  CardMedia,
   Box,
   Container,
   Stack,

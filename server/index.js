@@ -37,4 +37,28 @@ app.listen(3001, ()=>{
 })
 
 
+app.get('/api/ingredients/:query', async(req, res) => {
+    const {query} = req.params
+    console.log(query)
+    try{
+        const response = await axios.get('https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/food/ingredients/autocomplete', {
+            params:{
+                query: query,
+                number:5
+            },
+            headers:{
+                "x-rapidapi-key":
+                api_key,
+              "x-rapidapi-host":
+                "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com",
+            }
+
+        })
+        res.json(response.data)
+    }catch(err){
+        console.error(err)
+        res.status(500).json({error: err.message})
+    }
+})
+
 

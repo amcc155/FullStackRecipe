@@ -6,6 +6,7 @@ import { ThemeProvider } from '@mui/material/';
 import HomePage from './pages/HomePage';
 import theme from './themes';
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
+import SearchModal from './components/SearchModal';
 
 const Layout = () => (
   <>
@@ -29,9 +30,15 @@ const router = createBrowserRouter([
         element: (
           <DailyRandom />
         )
-      }
-    ]
-  }
+      },
+    ],
+  },
+    {
+
+    path:'/advanced/search',
+    element: <SearchModal/>
+    },
+  
 
 
 ])
