@@ -55,6 +55,9 @@ const DailyRandom = () => {
 
   return (
     <>
+    {randomRecipes && (
+
+  
       <Box
         sx={{
           display: "flex",
@@ -170,7 +173,9 @@ const DailyRandom = () => {
           </Container>
         </Box>
       </Box>
+        )}
     </>
   );
 };
+
 export default DailyRandom;

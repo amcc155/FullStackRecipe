@@ -1,0 +1,50 @@
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const client = require('../db')
+const { Router } = require('express');
+
+const authRouter = Router();
+
+authRouter.post('/signup', async (req, res) => {
+    const { username, password } = req.body;
+
+    if(!username || !password){
+        res.status(400).json({error: 'Username and password are required'});
+        return;
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const query = 'INSERT INTO users(username, password) VALUES($1, $2) RETURNING *';
+    const values = [username, hashedPassword];
+
+
+    try {
+        const response = await client.query(query, values);
+        res.json({ user: response.rows[0] });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+authRouter.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+    const query = 'SELECT * FROM users WHERE username = $1';
+    const values = [username];
+    try {
+        const response = await client.query(query, values);
+        const user = response.rows[0];
+
+        if (!user || !(await bcrypt.compare(password, user.password))) {
+            res.status(401).json({ error: 'Invalid username or password' });
+            return;
+        }
+        const token = jwt.sign({ userId: user.id }, process.env.SECRET, { expiresIn: '1h' });
+        res.status(200).json({ token });
+    } catch (err) {
+        res.status(500).json({ error: 'Error logging in' });
+    }
+});
+
+module.exports = authRouter;
