@@ -17,7 +17,7 @@ authRouter.post('/signup', async (req, res) => {
 
     const query = 'INSERT INTO users(username, password) VALUES($1, $2) RETURNING *';
     const values = [username, hashedPassword];
-
+ 
 
     try {
         const response = await client.query(query, values);
@@ -41,7 +41,7 @@ authRouter.post('/login', async (req, res) => {
             return;
         }
         const token = jwt.sign({ userId: user.id }, process.env.SECRET, { expiresIn: '1h' });
-        res.status(200).json({ token });
+        res.status(200).json({ token});
     } catch (err) {
         res.status(500).json({ error: 'Error logging in' });
     }

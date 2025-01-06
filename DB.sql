@@ -3,3 +3,19 @@ CREATE TABLE users(
     username VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL
 );
+
+CREATE TABLE recipes(
+    id INTEGER PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    imageURL VARCHAR(1000) NOT NULL
+);
+
+CREATE TABLE usersrecipes(
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    user_id INTEGER NOT NULL,
+    recipe_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (recipe_id) REFERENCES recipes(id)
+);
+
+

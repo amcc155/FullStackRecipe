@@ -2,53 +2,79 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 const theme = createTheme({
   palette: {
+    mode: 'dark',
     primary: {
-      main: "#ff7043", // Vibrant orange for buttons and accents
+      main: '#00bcd4', // Bright cyan accent color
     },
     secondary: {
-      main: "#8bc34a", // Fresh green for secondary elements
+      main: '#00bcd4', // Bright cyan accent color
     },
     background: {
-      default: "#f5f5f5", // Light gray for background areas
-      paper: "#ffffff", // Clean white for cards and containers
+      default: '#121212',
+      paper: '#1e1e1e',
     },
     text: {
-      primary: "#333333", // Dark text for readability
-      secondary: "#666666", // Lighter text for secondary information
+      primary: '#ffffff',
+      secondary: '#b0b0b0',
     },
   },
   typography: {
-    fontFamily: "Roboto, Arial, sans-serif",
+    fontFamily: 'Roboto, sans-serif',
+    h1: {
+      fontSize: '2.5rem',
+      fontWeight: 700,
+    },
+    h2: {
+      fontSize: '2rem',
+      fontWeight: 700,
+    },
+    h3: {
+      fontSize: '1.75rem',
+      fontWeight: 700,
+    },
     h4: {
-      fontWeight: 600,
-      color: "#ff7043", // Title color
+      fontSize: '1.5rem',
+      fontWeight: 700,
+    },
+    h5: {
+      fontSize: '1.25rem',
+      fontWeight: 700,
+    },
+    h6: {
+      fontSize: '1rem',
+      fontWeight: 700,
     },
     body1: {
-      fontSize: "1rem",
-      color: "#333333", // General text color
+      fontSize: '1rem',
+      fontWeight: 400,
+    },
+    body2: {
+      fontSize: '0.875rem',
+      fontWeight: 400,
     },
   },
   components: {
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          borderRadius: 12, // Rounded corners for cards
-          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)", // Soft shadow
-        },
-      },
-    },
-    MuiContainer: {
-      styleOverrides: {
-        root: {
-         
-        },
-      },
-    },
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 20, // Rounded buttons for a friendly look
-          textTransform: "none", // Keep text in buttons lowercase
+          borderRadius: '8px',
+          textTransform: 'none',
+          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#1e1e1e',
+          color: '#ffffff',
+        },
+      },
+    },
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#1e1e1e',
         },
       },
     },

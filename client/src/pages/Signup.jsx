@@ -1,13 +1,7 @@
 import { FormControl, InputLabel, Input, Grid, Button, Container, Typography, Box } from "@mui/material";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 
-
-const Login= () => {
-    const {login} = useAuth();
-    const navigate = useNavigate();
-
+const Signup = () => {
     const [loginInfo, setLoginInfo] = useState({
         username: '',
         password: ''
@@ -17,14 +11,21 @@ const Login= () => {
         setLoginInfo({ ...loginInfo, [e.target.name]: e.target.value });
     }
 
-    const handleLogin = async () => {
+    const Signup = async () => {
         try {
-            await login(loginInfo);
-            navigate('/');
+            const response = await fetch('http://localhost:3001/auth/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(loginInfo),
+            });
+            const data = await response.json();
+            console.log(data);
         } catch (err) {
             console.error(err);
+        }
     }
-}
 
     return (
         <Container
@@ -65,7 +66,7 @@ const Login= () => {
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={handleLogin}
+                    onClick={Signup}
                     sx={{ mt: 2 }}
                 >
                     Signup
@@ -75,4 +76,4 @@ const Login= () => {
     );
 };
 
-export default Login;
+export default Signup;

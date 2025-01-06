@@ -13,6 +13,7 @@ import LinkIcon from "@mui/icons-material/Link";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import CheckIcon from "@mui/icons-material/Check";
 import SideBar from "../components/RandomPage/SideBar";
+
 const DailyRandom = () => {
   const [randomRecipes, setRandomRecipes] = useState([]);
   const [selectedRecipe, setSelectedRecipe] = useState();
@@ -53,6 +54,20 @@ const DailyRandom = () => {
     fetchData();
   }, []);
 
+  const handleBookmarkClick = () => {
+    console.log("Bookmark clicked");
+    axios.post("http://localhost:3001/user/recipes", {
+      recipeId: selectedRecipe.id,
+      name: selectedRecipe.title,
+      url: selectedRecipe.image,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+  }
+
   return (
     <>
     {randomRecipes && (
@@ -80,6 +95,7 @@ const DailyRandom = () => {
           <img
             style={{ width: "40%", margin: "0 auto", display: "block" }}
             src={selectedRecipe?.image}
+            alt={selectedRecipe?.title || "Recipe Image"}
           />
 
           <Container
@@ -126,7 +142,7 @@ const DailyRandom = () => {
               >
                 <LinkIcon />
               </a>
-              <BookmarkBorderIcon />
+              <BookmarkBorderIcon onClick = {handleBookmarkClick}/>
             </Stack>
           </Container>
           <Container

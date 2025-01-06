@@ -4,6 +4,7 @@ require('dotenv').config();
 const cors = require('cors');
 const axios = require('axios'); 
 const authRouter = require('./routes/authRoutes.js');
+const userRouter = require('./routes/userRoutes.js');
 app.use(express.json());
 
 
@@ -91,6 +92,7 @@ app.get('/api/recipes/search', async(req, res) => {
 )
 
 app.use('/auth', authRouter)
+app.use('/user', userRouter)
 
 app.listen(3001, ()=>{
     console.log('listenig on port 3001')

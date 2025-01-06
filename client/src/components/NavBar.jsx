@@ -10,12 +10,14 @@ import {
   IconButton,
 } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
+import { useAuth } from "../context/AuthContext";
 
 import FoodBankIcon from "@mui/icons-material/FoodBank";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Link } from "react-router-dom";
 const NavBar = () => {
+  const{user} = useAuth()
   const [open, setIsOpen] = useState(false);
 
   return (
@@ -73,15 +75,16 @@ const NavBar = () => {
             <IconButton>
               <EditNoteIcon fontSize="large" />
             </IconButton>
-
+            {user ? (
+            <IconButton component = {Link} to = '/user/recipes'>
+              <Avatar> {user.username[0]} </Avatar>
+              </IconButton>
+              ):(
             <IconButton component = {Link} to = '/login'>
-              <Avatar
-                sx={{
-                  width: 28,
-                  height: 28,
-                }}
-              />
+            <Typography> Login </Typography>
             </IconButton>
+              )}
+          
           </Box>
         </Toolbar>
       </Container>

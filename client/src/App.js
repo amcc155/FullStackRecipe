@@ -4,12 +4,16 @@ import DailyRandom from './pages/DailyRandom';
 import { ThemeProvider } from '@mui/material/';
 import HomePage from './pages/HomePage';
 import theme from './themes';
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Outlet, BrowserRouter } from 'react-router-dom';
 import SearchModal from './components/AdvancedSearch/SearchModal';
+import Signup from './pages/Signup';
 import Login from './pages/Login';
+import UserRecipes from './pages/UserRecipes';
 import AdvancedSearchContextProvider from './components/context/AdvancedSearchContext';
 import ExcludeIngredients from './components/AdvancedSearch/ExcludeIngredients';
 import SearchResults from './pages/SearchResults';
+import { AuthProvider } from './context/AuthContext';
+
 
 const Layout = () => (
   <>
@@ -39,6 +43,11 @@ const router = createBrowserRouter([
       element:(
         <SearchResults/>
       )
+
+    },
+    {
+      path:'/user/recipes',
+      element:<UserRecipes/>
     }
     ],
   },
@@ -52,9 +61,14 @@ const router = createBrowserRouter([
       element: <ExcludeIngredients/>
     },
     {
-      path:'/login',
-      element: <Login/>
+      path:'/signup',
+      element: <Signup/>
     },
+{
+    path:'/login',
+    element:<Login/>,
+  },
+  
   
 
 
@@ -62,7 +76,8 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <>
+    
+    <AuthProvider>
   <AdvancedSearchContextProvider>
       <ThemeProvider theme={theme}>
       <RouterProvider router={router}>
@@ -70,7 +85,9 @@ function App() {
         </RouterProvider>
       </ThemeProvider>
     </AdvancedSearchContextProvider>
-    </>
+    </AuthProvider>
+   
+    
   );
 }
 

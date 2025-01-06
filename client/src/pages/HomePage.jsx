@@ -1,9 +1,28 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Container, Box, Typography, Button, ButtonGroup } from "@mui/material";
 import SearchModal from "../components/AdvancedSearch/SearchModal";
 const HomePage = () => {
   const [isSearching, setIsSearching] = useState(false);
+  const[userName, setUserName] = useState('')
+
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch("http://localhost:3001/user", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      const data = await response.json();
+      setUserName(data.user.username)
+      console.log(data);
+  }catch(err){
+    console.error(err)
+  }
+}
+
+useEffect(() => {
+  fetchUserData();
+}
+, []);
   return (
     <>
       <Container
@@ -24,7 +43,7 @@ const HomePage = () => {
             gap: 2,
           }}
         >
-          <Typography variant="h3"> Welcome Name </Typography>
+          <Typography variant="h3"> Welcome back {userName} </Typography>
           <Typography variant="body1">
             Start finding recipes faster and easier{" "}
           </Typography>
