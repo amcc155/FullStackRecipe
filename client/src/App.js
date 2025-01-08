@@ -13,13 +13,21 @@ import AdvancedSearchContextProvider from './components/context/AdvancedSearchCo
 import ExcludeIngredients from './components/AdvancedSearch/ExcludeIngredients';
 import SearchResults from './pages/SearchResults';
 import { AuthProvider } from './context/AuthContext';
+import ProfilePage from './pages/ProfilePage';
+import RecipePage from './pages/RecipePage';
+import {Box} from '@mui/material/';
 
 
 const Layout = () => (
   <>
+  <Box sx = {{display:'flex'}}>
     <NavBar />
+    <Box sx = {{flexGrow:1}}>
     <Outlet />
+    </Box>
+    </Box>
   </>
+  
 )
 const router = createBrowserRouter([
   {
@@ -31,6 +39,15 @@ const router = createBrowserRouter([
         element: <HomePage />,
       },
 
+      {
+        path:'/profile',
+        element: <ProfilePage/>,
+      },
+
+      {
+      path:'/recipe/:id',
+      element: <RecipePage/>
+      },
 
       {
         path: "/random/daily",

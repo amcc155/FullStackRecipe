@@ -1,94 +1,69 @@
 import { useState } from "react";
 import {
-  Container,
-  TextField,
-  Toolbar,
-  Typography,
   Box,
-  Avatar,
   Drawer,
   IconButton,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  Typography,
+  Avatar,
 } from "@mui/material";
-import AppBar from "@mui/material/AppBar";
 import { useAuth } from "../context/AuthContext";
-
 import FoodBankIcon from "@mui/icons-material/FoodBank";
 import EditNoteIcon from "@mui/icons-material/EditNote";
-import MenuIcon from "@mui/icons-material/Menu";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import FeedIcon from "@mui/icons-material/Feed";
 import { Link } from "react-router-dom";
+
 const NavBar = () => {
-  const{user} = useAuth()
+  const { user } = useAuth();
   const [open, setIsOpen] = useState(false);
 
+  const toggleDrawer = () => {
+    setIsOpen(!open);
+  };
+
   return (
-    <AppBar position="static">
-      <Container maxWidth="xl">
-        <Toolbar
+    <Box sx={{ display: "flex" }}>
+      <Drawer
+        variant="permanent"
+        PaperProps={{
+          sx: { width: 250, backgroundColor:'white'},
+        }}
+      >
+        <Box
           sx={{
+            width: 250,
             display: "flex",
-            justifyContent: "space-between",
+            flexDirection: "column",
             alignItems: "center",
+            mt: 2,
           }}
-          disableGutters
         >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-            }}
-          >
-            <MenuIcon onClick={() => setIsOpen(!open)} />
-            <Drawer
-              open={open}
-              onClose={() => setIsOpen(false)}
-              PaperProps={{
-                sx: { width: "10%" },
-              }}
-            ></Drawer>
-            <IconButton component={Link} to="/">
-              <FoodBankIcon fontSize="large" />
-            </IconButton>
-            <Typography
-              fontSize="large"
-              sx={{
-                ml: 1,
-              }}
-            >
-              {" "}
-              Recipe{" "}
-            </Typography>
-          </Box>
-          <TextField
-            sx={{
-              flexGrow: 1,
-              maxWidth: "300px",
-            }}
-          />
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-            }}
-          >
-            <IconButton>
-              <EditNoteIcon fontSize="large" />
-            </IconButton>
-            {user ? (
-            <IconButton component = {Link} to = '/user/recipes'>
-              <Avatar> {user.username[0]} </Avatar>
-              </IconButton>
-              ):(
-            <IconButton component = {Link} to = '/login'>
-            <Typography> Login </Typography>
-            </IconButton>
-              )}
-          
-          </Box>
-        </Toolbar>
-      </Container>
-    </AppBar>
+          <List>
+            <ListItem button component={Link} to={user ? "/profile" : "/login"}>
+              <ListItemIcon>
+                <AccountCircleIcon />
+              </ListItemIcon>
+              <ListItemText primary={user ? "Profile" : "Login"} />
+            </ListItem>
+            <Divider />
+            <ListItem button component={Link} to="/">
+              <ListItemIcon>
+                <FeedIcon />
+              </ListItemIcon>
+              <ListItemText primary="Feed" />
+            </ListItem>
+          </List>
+        </Box>
+      </Drawer>
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        {/* Main content goes here */}
+      </Box>
+    </Box>
   );
 };
 

@@ -1,23 +1,23 @@
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: '#00bcd4', // Bright cyan accent color
-    },
-    secondary: {
-      main: '#00bcd4', // Bright cyan accent color
-    },
-    background: {
-      default: '#121212',
-      paper: '#1e1e1e',
-    },
-    text: {
-      primary: '#ffffff',
-      secondary: '#b0b0b0',
-    },
-  },
+  // palette: {
+  //   mode: 'dark',
+  //   primary: {
+  //     main: '#00bcd4', // Bright cyan accent color
+  //   },
+  //   secondary: {
+  //     main: '#00bcd4', // Bright cyan accent color
+  //   },
+  //   background: {
+  //     default: '#121212', // Dark background for the body
+  //     paper: '#1e1e1e',
+  //   },
+  //   text: {
+  //     primary: '#ffffff',
+  //     secondary: '#b0b0b0',
+  //   },
+  // },
   typography: {
     fontFamily: 'Roboto, sans-serif',
     h1: {
@@ -78,6 +78,8 @@ const theme = createTheme({
         },
       },
     },
+   
+    
   },
 });
 

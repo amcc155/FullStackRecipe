@@ -18,4 +18,13 @@ CREATE TABLE usersrecipes(
     FOREIGN KEY (recipe_id) REFERENCES recipes(id)
 );
 
+CREATE TABLE reviews(
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    user_id INTEGER NOT NULL,
+    recipe_id INTEGER NOT NULL,
+    rating INTEGER NOT NULL,
+    review VARCHAR(1000) NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (recipe_id) REFERENCES recipes(id)
+);
 

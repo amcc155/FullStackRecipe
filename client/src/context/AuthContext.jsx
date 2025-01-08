@@ -6,6 +6,7 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
+  const[loading, setLoading] = useState(true)
 
  const login = async(info) =>{
     try {
@@ -33,11 +34,13 @@ export const AuthProvider = ({ children }) => {
    
   }
 
+  //fetched the user when app starts, and every time token state changes
   useEffect(() => {
     const token = localStorage.getItem("token");
     setToken(token);
-
+    
     const fetchUser = async () => {
+
       if (token) {
         try {
           const response = await fetch("http://localhost:3001/user", {
@@ -46,13 +49,17 @@ export const AuthProvider = ({ children }) => {
             },
           });
           const data = await response.json();
+          console.log(data)
          
           setUser(data.user);
         } catch (err) {
           console.error(err);
+        }finally{
+          setLoading(false)
         }
       }
     };
+    
     fetchUser();
   }, [token]);
 
@@ -60,7 +67,7 @@ export const AuthProvider = ({ children }) => {
 
 
   return (
-    <AuthContext.Provider value={{ user, setUser, token, setToken, login, logout}}>
+    <AuthContext.Provider value={{ user, setUser, token, setToken, login, logout, loading}}>
       {children}
     </AuthContext.Provider>
   );

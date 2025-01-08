@@ -22,6 +22,7 @@ const Login= () => {
             await login(loginInfo);
             navigate('/');
         } catch (err) {
+            
             console.error(err);
     }
 }
