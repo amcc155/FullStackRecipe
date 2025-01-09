@@ -20,7 +20,7 @@ import {Box} from '@mui/material/';
 
 const Layout = () => (
   <>
-  <Box sx = {{display:'flex'}}>
+  <Box sx = {{display:'flex', minHeight:'100dvh'}}>
     <NavBar />
     <Box sx = {{flexGrow:1}}>
     <Outlet />

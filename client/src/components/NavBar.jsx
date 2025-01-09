@@ -21,7 +21,7 @@ import { Link } from "react-router-dom";
 const NavBar = () => {
   const { user } = useAuth();
   const [open, setIsOpen] = useState(false);
-
+  const drawerWidth = 250
   const toggleDrawer = () => {
     setIsOpen(!open);
   };
@@ -30,8 +30,15 @@ const NavBar = () => {
     <Box sx={{ display: "flex" }}>
       <Drawer
         variant="permanent"
-        PaperProps={{
-          sx: { width: 250, backgroundColor:'white'},
+        sx={{
+          backgroundColor:'white',
+          width: drawerWidth,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            boxSizing: 'border-box',
+            backgroundColor:'white'
+          },
         }}
       >
         <Box
@@ -60,9 +67,7 @@ const NavBar = () => {
           </List>
         </Box>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        {/* Main content goes here */}
-      </Box>
+     
     </Box>
   );
 };
