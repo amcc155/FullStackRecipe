@@ -15,20 +15,27 @@ import SearchResults from './pages/SearchResults';
 import { AuthProvider } from './context/AuthContext';
 import ProfilePage from './pages/ProfilePage';
 import RecipePage from './pages/RecipePage';
+import { NavBarProvider } from './components/context/NavBarContext';
 import {Box} from '@mui/material/';
+import {useMediaQuery} from '@mui/material/';
 
 
-const Layout = () => (
+  
+const Layout = () => {
+  const isMedium = useMediaQuery(`(min-width:768px)`)
+  return(
+
+  
   <>
-  <Box sx = {{display:'flex', minHeight:'100dvh'}}>
+  <Box sx = {{ display: isMedium? 'flex': 'block', minHeight: isMedium ? '100dvh' : 'auto'}}>
     <NavBar />
     <Box sx = {{flexGrow:1}}>
     <Outlet />
     </Box>
     </Box>
   </>
-  
-)
+  )
+}
 const router = createBrowserRouter([
   {
     path: '/',
@@ -95,6 +102,7 @@ function App() {
   return (
     
     <AuthProvider>
+      <NavBarProvider>
   <AdvancedSearchContextProvider>
       <ThemeProvider theme={theme}>
       <RouterProvider router={router}>
@@ -102,6 +110,7 @@ function App() {
         </RouterProvider>
       </ThemeProvider>
     </AdvancedSearchContextProvider>
+    </NavBarProvider>
     </AuthProvider>
    
     
