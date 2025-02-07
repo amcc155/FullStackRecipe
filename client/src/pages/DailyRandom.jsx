@@ -76,7 +76,7 @@ const DailyRandom = () => {
       <Box
         sx={{
           display: "flex",
-          maxHeight: "calc(100vh-64px)",
+          height:'100%'
         }}
       >
         {/* start of sidebar */}
@@ -105,7 +105,6 @@ const DailyRandom = () => {
               bgcolor: "#f5f5f5",
               px:5,
               width: "100%",
-
               minHeight: "10%",
               display: "flex",
               alignItems: "center",

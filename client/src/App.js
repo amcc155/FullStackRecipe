@@ -29,7 +29,7 @@ const Layout = () => {
   <>
   <Box sx = {{ display: isMedium? 'flex': 'block', minHeight: isMedium ? '100dvh' : 'auto'}}>
     <NavBar />
-    <Box sx = {{flexGrow:1}}>
+    <Box sx = {{flexGrow:1, height: isMedium? '100dvh': 'calc(100dvh - 54px)' }}>
     <Outlet />
     </Box>
     </Box>

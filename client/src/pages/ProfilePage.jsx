@@ -1,72 +1,78 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Container,
-  Paper,
-  Typography,
-} from "@mui/material";
-import { useAuth } from "../context/AuthContext";
-import { useTheme } from "@mui/material/styles";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import { Avatar, Box, Button, Container, Typography, Tabs, Tab, Card, CardHeader, CardMedia, CardContent, Grid } from '@mui/material';
+import { useAuth } from '../context/AuthContext';
+import { useTheme } from '@mui/material/styles';
+import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
+
 const ProfilePage = () => {
   const { user, loading, logout } = useAuth();
   const theme = useTheme();
   const navigate = useNavigate();
-  const[latestRecipes, setlatestRecipes] = useState([]);
+  const [latestData, setLatestData] = useState({ recipes: [], reviews: [] });
+  const [tabValue, setTabValue] = useState('Saved');
 
   useEffect(() => {
-    const fetchData = async () => { 
-        try{
-            const response = await axios.get("http://localhost:3001/user/recipes", {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-            });
-            console.log(response.data);
-            const length = response.data.recipes.length;
-            setlatestRecipes(response.data.recipes.slice(length - 3, length));
-        }catch(err){
-            console.error(err)
-
-        }
-    }
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/user/recipes', {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        });
+        console.log(response.data);
+        setLatestData(response.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
     fetchData();
   }, []);
 
   const handleLogout = async () => {
     try {
       await logout();
-      navigate("/");
+      navigate('/');
     } catch (err) {
       console.error(err);
     }
   };
 
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
+
   return (
-    <>
+    <Box sx = {{
+      maxHeight:'100%',
+     overflow:'scroll',
+     px:2,
+     py:2,
+      display:'flex',
+      flexDirection:'column',
+      boxSizing:'border-box',
+    }}>
       {loading ? (
-        <p> Loading </p>
+        <p>Loading</p>
       ) : (
         <Container
           sx={{
-            height: "calc(100dvh - 150px)",
-            maxHeight:'1000px',
+            overflow:'scroll',
+          
+            height:'100%',
+        
             borderRadius: 2,
             border: `2px solid ${theme.palette.primary.main}`,
-            mt: 5,
-            pl: 7,
-            position: "relative",
-            display: "flex",
-            flexDirection: "column",
+            position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
           <Box
             sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 4,
+              display: 'flex',
+              flexDirection: 'column',
+              textAlign: 'center',
+              alignItems: 'center',
+              gap: 1,
             }}
           >
             <Avatar
@@ -76,98 +82,74 @@ const ProfilePage = () => {
                 mt: 2,
               }}
             >
-              {" "}
+              {user?.username[0]}
             </Avatar>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <Typography variant="h2"> {user?.username} </Typography>
-              <Typography> Date Joined: Date </Typography>
-            </Box>
+
+            <Typography variant="h2">{user?.username}</Typography>
+            <Typography>Date Joined: Date</Typography>
           </Box>
-
-          <Box
-            sx={{
-              height: "80%",
-              backgroundColor: "red",
-              mt: 2,
-              mb: 100,
-              display: "flex",
-              gap: 5,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
+          {/* Tabs */}
+          <Tabs
+            value={tabValue}
+            textColor={theme.palette.primary.main}
+            indicatorColor={theme.palette.secondary.main}
+            aria-label="secondary tabs example"
+            variant="fullWidth"
+            onChange={handleTabChange}
           >
-            <Paper
-              sx={{ width: "300px", height: "90%", textAlign: "center" }}
-              elevation={3}
-            >
-              <Typography
-                sx={{ textDecoration: "none", color: "white" }}
-                component={Link}
-                to="/user/recipes"
-              >
-                {" "}
-                Latest Recipes{" "}
+            <Tab value="Saved" label="Saved" />
+            <Tab value="Collections" label="Collections" />
+            <Tab value="Reviews" label="Reviews" />
+          </Tabs>
 
-              </Typography>
-              <Container sx = {{height: '100%', display: 'flex', alignItems:'center', flexDirection: 'column', gap: 2}}>
-              {latestRecipes.map((recipe) => (
-                <Box sx = {{width:'70%', height:'25%', objectFit:'cover'}}component={Link}  to = {`/recipe/${recipe.id}`} key = {recipe.id}>
-                <Box
-                component='img'
-                sx = {{width:'100%', height:'100%', objectFit:'cover'}}
-                src = {recipe.imageurl}
-                />
-                </Box>
-            
+      
+
+          {tabValue === 'Saved' && (
+            <Grid container spacing={2} sx={{ padding: 2 }}>
+              {latestData?.recipes?.map((recipe) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={recipe.id}>
+                  <Card sx={{ height: '100%' }}>
+                    <CardHeader
+                      component={Link}
+                      to={`/recipe/${recipe.id}`}
+                      title={recipe.name}
+                      sx={{ textAlign: 'center' }}
+                    />
+                    <CardMedia
+                      component="img"
+                      image={recipe.imageurl}
+                      sx={{ height: '200px', objectFit: 'cover' }}
+                    />
+                    <CardContent>
+                      <Typography variant="body2" color="textSecondary" component="p">
+                        {recipe.description}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
               ))}
-               </Container>
-            </Paper>
-           
-            <Paper
-              sx={{ width: "300px", height: "90%", textAlign: "center" }}
-              elevation={3}
-            >
-              <Typography
-                sx={{ textDecoration: "none", color: "white" }}
-                component={Link}
-                to="/user/recipes"
-              >
-                {" "}
-                Recent Reviews{" "}
-              </Typography>
-            </Paper>
-            <Paper
-              sx={{ width: "300px", height: "90%", textAlign: "center" }}
-              elevation={3}
-            >
-              <Typography
-                sx={{ textDecoration: "none", color: "white" }}
-                component={Link}
-                to="/user/recipes"
-              >
-                {" "}
-                Latest Recipes{" "}
-              </Typography>
-            </Paper>
-          </Box>
+            </Grid>
+          )}
 
-          <Button
-            sx={{ position: "absolute", bottom: 20, right: 20 }}
-            variant="contained"
-            color="error"
-            onClick={handleLogout}
-          >
-            {" "}
-            Logout{" "}
-          </Button>
+          {tabValue === 'Reviews' && (
+            <Grid container spacing={2} sx={{ padding: 2, }}>
+              {latestData?.reviews?.map((review) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={review.id}>
+                  <Card sx={{ height: '100%' }}>
+                    <CardContent>
+                      <Typography variant="body2" color="textSecondary" component="p">
+                        {review.review}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          )}
         </Container>
       )}
-    </>
+    </Box>
   );
 };
+
 export default ProfilePage;

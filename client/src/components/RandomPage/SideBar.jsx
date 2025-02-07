@@ -6,7 +6,7 @@ const SideBar = ({randomRecipes, setSelectedRecipe}) => {
       component="aside"
       sx={{
         width: "25%",
-        maxHeight: "calc(100vh - 64px)",
+        
         overflow: "scroll",
         flexShrink: 0,
       }}
