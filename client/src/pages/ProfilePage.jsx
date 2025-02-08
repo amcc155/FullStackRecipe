@@ -10,6 +10,7 @@ import {
   CardMedia,
   CardContent,
   Grid,
+  Rating,
 } from "@mui/material";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "@mui/material/styles";
@@ -22,22 +23,31 @@ const ProfilePage = () => {
   const { user, loading, logout } = useAuth();
   const theme = useTheme();
   const navigate = useNavigate();
-  const [latestData, setLatestData] = useState({ recipes: [], reviews: [] });
+  const [latestData, setLatestData] = useState({ Saved: [], Reviews: [] });
   const [tabValue, setTabValue] = useState("Saved");
 
+ 
+
+  const fetchReviews = ()=> axios.get("http://localhost:3001/user/reviews", {
+    headers:{Authorization: `Bearer ${localStorage.getItem('token')}`}
+  }).then(response => response.data.reviews)
+
+  const fetchSaved = ()=> axios.get("http://localhost:3001/user/recipes", {
+    headers:{Authorization: `Bearer ${localStorage.getItem('token')}`}
+  }).then(response => {
+
+   return response.data.recipes
+ })
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:3001/user/recipes", {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-        console.log(response.data);
-        setLatestData(response.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchData();
+    Promise.all([fetchSaved(), fetchReviews()]).then(([saved, reviews]) =>{
+      console.log(reviews)
+      setLatestData({...latestData, Saved:saved, Reviews:reviews})
+
+
+  }).catch(err => {
+    console.error(err);
+  });
   }, []);
 
   const handleLogout = async () => {
@@ -51,12 +61,14 @@ const ProfilePage = () => {
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
+
+
   };
 
   return (
     <Box
       sx={{
-        maxHeight: "100%",
+        height: "100%",
         overflow: "scroll",
         px: 2,
         py: 2,
@@ -93,7 +105,8 @@ const ProfilePage = () => {
 
           {tabValue === "Saved" && (
             <Grid container spacing={2} sx={{ padding: 2 }}>
-              {latestData?.recipes?.map((recipe) => (
+              {latestData?.Saved?.map((recipe) => (
+
                 <Grid item xs={12} sm={6} md={4} lg={3} key={recipe.id}>
                   <Card sx={{ height: "100%" }}>
                     <CardHeader
@@ -123,23 +136,32 @@ const ProfilePage = () => {
           )}
 
           {tabValue === "Reviews" && (
-            <Grid container spacing={2} sx={{ padding: 2 }}>
-              {latestData?.reviews?.map((review) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={review.id}>
-                  <Card sx={{ height: "100%" }}>
+            <Box sx = {{display:'flex', flexDirection:'column', gap:2, mt:4}}>
+              {latestData?.Reviews?.map((review) => (
+               
+                
+                  <Card sx={{ height: "100%", width:'100%'}}>
                     <CardContent>
+                      <Typography sx = {{display:'block'}}component={Link} to = {`/recipe/:${review.recipe_id}`} >  {review.name} </Typography>
+                      <Rating
+                      name = 'read-only'
+                      value = {review.rating}
+                      readOnly
+                      />
                       <Typography
                         variant="body2"
                         color="textSecondary"
                         component="p"
+                        sx= {{mt:1}}
                       >
                         {review.review}
                       </Typography>
                     </CardContent>
                   </Card>
-                </Grid>
+                
+               
               ))}
-            </Grid>
+            </Box>
           )}
         </Container>
       )}

@@ -68,8 +68,8 @@ userRouter.post('/recipes', authenticate, async (req, res) => {
 
 
 userRouter.get('/reviews', authenticate, async(req, res) =>{
-  const user = req.user.id
-  const query = 'SELECT * FROM reviews  where user_id = $1'
+  const user = req.user?.id
+  const query = 'SELECT * FROM reviews as r JOIN recipes as rcp on r.recipe_id = rcp.id  where r.user_id = $1'
   try{
    const response =  await client.query(query, [user])
     res.json({reviews: response.rows})

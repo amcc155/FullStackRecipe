@@ -5,6 +5,7 @@ const authenticate = require('../middleware/authenticate');
 
 const reviewRouter = Router();
 
+//post a recipe by id
 reviewRouter.post('/:recipeId', authenticate, async (req, res) => {
     const { recipeId } = req.params;
     const { rating, review } = req.body;
@@ -30,6 +31,7 @@ reviewRouter.post('/:recipeId', authenticate, async (req, res) => {
     }
 })
 
+//get a review by id
 reviewRouter.get('/:recipeId', async (req, res) => {
     const { recipeId } = req.params;
     const query = 'SELECT * FROM reviews as r JOIN users as u on r.user_id = u.id WHERE recipe_id = $1';
@@ -44,6 +46,9 @@ reviewRouter.get('/:recipeId', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 })
+
+//get a reviews by id
+reviewRouter.get
 
 
 
