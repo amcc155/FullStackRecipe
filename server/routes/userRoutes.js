@@ -78,4 +78,16 @@ userRouter.get('/reviews', authenticate, async(req, res) =>{
   }
 })
 
+
+userRouter.get('/collections/:id', async(req,res) =>{
+  const user = req.user?.id
+  const query = 'SELECT * FROM collections as c JOIN users as u on c.user_id = u.id where c.user_id = $1'
+  try{
+    const response = await client.query(query, [user])
+    res.json({collections: response.rows})
+  }catch(err){
+    res.status(500).json({error: err.message})
+  }
+
+})
 module.exports = userRouter;

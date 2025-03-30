@@ -1,27 +1,14 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
 import { Container, Box, Typography, Button, ButtonGroup } from "@mui/material";
 import SearchModal from "../components/AdvancedSearch/SearchModal";
 const HomePage = () => {
   const [isSearching, setIsSearching] = useState(false);
-  const [userName, setUserName] = useState("");
+  
+  const { user } = useAuth();
+  const userName = user ? user.username : 'Guest'
 
-  const fetchUserData = async () => {
-    try {
-      const response = await fetch("http://localhost:3001/user", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      const data = await response.json();
-      setUserName(data.user.username);
-      console.log(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    fetchUserData();
-  }, []);
   return (
     <>
       <Box

@@ -21,9 +21,10 @@ import TabMenu from "./ProfilePage/TabMenu";
 
 const ProfilePage = () => {
   const { user, loading, logout } = useAuth();
+  console.log(user)
   const theme = useTheme();
   const navigate = useNavigate();
-  const [latestData, setLatestData] = useState({ Saved: [], Reviews: [] });
+  const [latestData, setLatestData] = useState({ Saved: [], Reviews: [], Collections:[] });
   const [tabValue, setTabValue] = useState("Saved");
 
  
@@ -39,16 +40,26 @@ const ProfilePage = () => {
    return response.data.recipes
  })
 
+ 
+ const fetchCollections = ()=> axios.get(`http://localhost:3001/user/collections/${user.id}`, {
+  headers:{Authorization: `Bearer ${localStorage.getItem('token')}`}
+}).then(response => response.data.collections)
+
+
   useEffect(() => {
-    Promise.all([fetchSaved(), fetchReviews()]).then(([saved, reviews]) =>{
-      console.log(reviews)
-      setLatestData({...latestData, Saved:saved, Reviews:reviews})
+    if(user){
+
+    
+    Promise.allSettled([fetchSaved(), fetchReviews(), fetchCollections()]).then(([saved, reviews, collections]) =>{
+      console.log(saved)
+      setLatestData({...latestData,  Saved:saved.status === 'fulfilled'? saved.value : null, Reviews: reviews.status === 'fulfilled' ? reviews.value : null, Collections: collections.status === 'fulfilled' ? collections.value : null})
 
 
   }).catch(err => {
     console.error(err);
   });
-  }, []);
+}
+  }, [user]);
 
   const handleLogout = async () => {
     try {
@@ -135,6 +146,7 @@ const ProfilePage = () => {
             </Grid>
           )}
 
+
           {tabValue === "Reviews" && (
             <Box sx = {{display:'flex', flexDirection:'column', gap:2, mt:4}}>
               {latestData?.Reviews?.map((review) => (
@@ -163,6 +175,10 @@ const ProfilePage = () => {
               ))}
             </Box>
           )}
+        
+         {tabValue === 'Collection' &&(
+          <Grid container spacing={2} sx={{ padding: 2 }}/>
+         )}
         </Container>
       )}
     </Box>
