@@ -154,7 +154,7 @@ const ProfilePage = () => {
                 
                   <Card sx={{ height: "100%", width:'100%'}}>
                     <CardContent>
-                      <Typography sx = {{display:'block'}}component={Link} to = {`/recipe/:${review.recipe_id}`} >  {review.name} </Typography>
+                      <Typography sx = {{display:'block'}}component={Link} to = {`/recipe/${review.recipe_id}`} >  {review.name} </Typography>
                       <Rating
                       name = 'read-only'
                       value = {review.rating}
