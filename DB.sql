@@ -43,7 +43,13 @@ CREATE TABLE collectionsrecipes(
     FOREIGN KEY (recipe_id) REFERENCES recipes(id)
 );
 
-
+CREATE TABLE userLikedRecipes(
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    user_id INTEGER NOT NULL,
+    recipe_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (recipe_id) REFERENCES recipes(id)
+);
 
 INSERT INTO collections (user_id, name) VALUES (5, 'Favorites');
 INSERT INTO collectionsrecipes (collection_id, recipe_id) VALUES (1, 648721);

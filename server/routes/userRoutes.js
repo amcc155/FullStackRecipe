@@ -16,8 +16,6 @@ userRouter.get('/', authenticate, async (req, res) => {
 userRouter.get('/recipes', authenticate, async (req, res) => {
   const query = 'Select * from usersrecipes as ur JOIN recipes as r on ur.recipe_id = r.id WHERE ur.user_id = $1';
   const values = [req.user.id];
-
-
   try {
     const response = await client.query(query, values);
     res.json({ recipes: response.rows });
@@ -34,8 +32,6 @@ userRouter.post('/recipes', authenticate, async (req, res) => {
   const currentRecipesQuery = 'Select * from recipes where id = $1'
   const checkUserRecipesQuery = 'Select * from usersrecipes where user_id = $1 and recipe_id = $2'
   const checkUserRecipesValues = [req.user.id, recipeId]
-
-
 
   const query2 = 'INSERT INTO recipes(id, name, imageUrl) VALUES($1, $2, $3) RETURNING *';
   const values2 = [recipeId, name, url];
@@ -66,27 +62,52 @@ userRouter.post('/recipes', authenticate, async (req, res) => {
   }
 });
 
+userRouter.get('/likedRecipes', authenticate, async (req, res) => { 
+  const query = 'SELECT * FROM userLikedRecipes as ul JOIN recipes as r on ul.recipe_id = r.id WHERE ul.user_id = $1';
+  const values = [req.user.id];
+  try {
+    const response = await client.query(query, values);
+    res.json({ recipes: response.rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+);
 
-userRouter.get('/reviews', authenticate, async(req, res) =>{
+userRouter.post('/likedRecipes', authenticate, async (req, res) => {
+  const {recipeId} = req.body;
+  const user_id = req.user.id;
+  const query = 'INSERT INTO userLikedRecipes(user_id, recipe_id) VALUES($1, $2) RETURNING *';
+  const values = [user_id, recipeId];
+  try {
+    const response = await client.query(query, values);
+    res.json({ recipe: response.rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+);
+
+userRouter.get('/reviews', authenticate, async (req, res) => {
   const user = req.user?.id
   const query = 'SELECT * FROM reviews as r JOIN recipes as rcp on r.recipe_id = rcp.id  where r.user_id = $1'
-  try{
-   const response =  await client.query(query, [user])
-    res.json({reviews: response.rows})
-  }catch(err){
-    res.status(500).json({error: err.message})
+  try {
+    const response = await client.query(query, [user])
+    res.json({ reviews: response.rows })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
   }
 })
 
 
-userRouter.get('/collections/:id', async(req,res) =>{
+userRouter.get('/collections/:id', async (req, res) => {
   const user = req.user?.id
   const query = 'SELECT * FROM collections as c JOIN users as u on c.user_id = u.id where c.user_id = $1'
-  try{
+  try {
     const response = await client.query(query, [user])
-    res.json({collections: response.rows})
-  }catch(err){
-    res.status(500).json({error: err.message})
+    res.json({ collections: response.rows })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
   }
 
 })
