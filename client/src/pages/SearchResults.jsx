@@ -8,13 +8,10 @@ const SearchResults = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Convert the URLSearchParams to a query string
                 const queryString = params.toString();
-
-                const response = await fetch(`http://localhost:3001/api/recipes/search?${queryString}`);
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/api/recipes/search?${queryString}`);
                 const data = await response.json();
                 setData(data);
-                console.log(data);
             } catch (err) {
                 console.error(err);
             }

@@ -35,17 +35,11 @@ const DailyRandom = () => {
 
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:3001/api/random/recipes"
-        );
-        console.log(response.data.recipes);
-        localStorage.setItem(
-          "randomRecipes",
-          JSON.stringify(response.data.recipes)
-        );
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/random/recipes`); // Updated URL
+        localStorage.setItem("randomRecipes", JSON.stringify(response.data.recipes));
         localStorage.setItem("latestFetch", new Date());
-        setRandomRecipes(response.data.recipes)
-        setSelectedRecipe(response.data.recipes[0])
+        setRandomRecipes(response.data.recipes);
+        setSelectedRecipe(response.data.recipes[0]);
       } catch (err) {
         console.error(err);
       }
@@ -56,7 +50,7 @@ const DailyRandom = () => {
 
   const handleBookmarkClick = () => {
     console.log("Bookmark clicked");
-    axios.post("http://localhost:3001/user/recipes", {
+    axios.post(`${process.env.REACT_APP_API_URL}/user/recipes`, {
       recipeId: selectedRecipe.id,
       name: selectedRecipe.title,
       url: selectedRecipe.image,

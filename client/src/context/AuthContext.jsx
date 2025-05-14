@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
 
  const login = async(info) =>{
     try {
-      const response = await fetch('http://localhost:3001/auth/login', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/login`, { // Added template literal
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
 
       if (token) {
         try {
-          const response = await fetch("http://localhost:3001/user", {
+          const response = await fetch(`${process.env.REACT_APP_API_URL}/user`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -76,4 +76,4 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => {
     return useContext(AuthContext);
   };
-  
+

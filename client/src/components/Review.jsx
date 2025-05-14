@@ -18,7 +18,7 @@ const Review = () => {
       e.preventDefault();
       try {
        const response = await axios.post(
-          `http://localhost:3001/review/${recipeId}`, 
+          `${process.env.REACT_APP_API_URL}/review/${recipeId}`, 
           { 
             review: inputValue.review,
             rating: inputValue.rating
@@ -37,7 +37,7 @@ const Review = () => {
     useEffect(() => {
       const fetchReviews = async () => {
         try {
-          const response = await axios.get(`http://localhost:3001/review/${recipeId}`);
+          const response = await axios.get(`${process.env.REACT_APP_API_URL}/review/${recipeId}`);
           setReviews(response.data.reviews);
         } catch (err) {
           console.error(err);

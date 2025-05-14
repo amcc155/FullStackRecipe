@@ -6,6 +6,7 @@ const axios = require('axios');
 const authRouter = require('./routes/authRoutes.js');
 const userRouter = require('./routes/userRoutes.js');
 const reviewRouter = require('./routes/reviewRoutes.js');
+const collectionsRouter = require('./routes/collectionsRoutes')
 app.use(express.json());
 
 
@@ -39,7 +40,7 @@ app.get('/api/random/recipes', async(req, res) => {
 
 app.get('/api/recipes/search', async(req, res) => {
     const {includeIngredients, excludeIngredients} = req.query
-   console.log(includeIngredients, excludeIngredients)
+  
     try{
         const response = await axios.get('https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/complexSearch', {
             params:{
@@ -115,6 +116,7 @@ app.get('/api/ingredients/:query', async(req, res) => {
 app.use('/auth', authRouter)
 app.use('/user', userRouter)
 app.use('/review', reviewRouter)
+app.use('/collections', collectionsRouter)
 
 app.listen(3001, ()=>{
     console.log('listenig on port 3001')

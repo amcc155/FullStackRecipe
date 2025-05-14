@@ -15,15 +15,12 @@ const UserRecipes = () => {
     useEffect(() => {
         const fetchUserRecipes = async () => {
             try {
-                const response = await axios.get("http://localhost:3001/user/recipes", {
-                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+                const response = await axios.get(`${process.env.REACT_APP_API_URL}/user/recipes`, { // Updated URL
+                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
                 });
                 setUserRecipes(response.data.recipes);
-                setLoading(false);
             } catch (err) {
                 console.error(err);
-            } finally {
-                setLoading(false);
             }
         }
         fetchUserRecipes();

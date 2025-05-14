@@ -43,7 +43,7 @@ const ExcludeIngredients = () => {
       if (debouncedSearchWord) {
         try {
           const response = await axios.get(
-            `http://localhost:3001/api/ingredients/${debouncedSearchWord}`
+            `${process.env.REACT_APP_API_URL}/api/ingredients/${debouncedSearchWord}`
           );
           console.log(response.data);
           setOptions(response.data.map((option) => option.name));

@@ -29,11 +29,11 @@ const ProfilePage = () => {
 
  
 
-  const fetchReviews = ()=> axios.get("http://localhost:3001/user/reviews", {
+  const fetchReviews = ()=> axios.get(`${process.env.REACT_APP_API_URL}/user/reviews`, {
     headers:{Authorization: `Bearer ${localStorage.getItem('token')}`}
   }).then(response => response.data.reviews)
 
-  const fetchSaved = ()=> axios.get("http://localhost:3001/user/recipes", {
+  const fetchSaved = ()=> axios.get(`${process.env.REACT_APP_API_URL}/user/recipes`, {
     headers:{Authorization: `Bearer ${localStorage.getItem('token')}`}
   }).then(response => {
 
@@ -41,7 +41,7 @@ const ProfilePage = () => {
  })
 
  
- const fetchCollections = ()=> axios.get(`http://localhost:3001/user/collections/${user.id}`, {
+ const fetchCollections = ()=> axios.get(`${process.env.REACT_APP_API_URL}/user/collections/${user.id}`, {
   headers:{Authorization: `Bearer ${localStorage.getItem('token')}`}
 }).then(response => response.data.collections)
 
