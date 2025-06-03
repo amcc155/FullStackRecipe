@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from "react";
 import {
-  
   Box,
   Container,
   Typography,
- 
   Card,
   CardHeader,
   CardMedia,
   CardContent,
   Grid,
   Rating,
+  Button,
 } from "@mui/material";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "@mui/material/styles";
@@ -18,47 +17,61 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import UserInfo from "./ProfilePage/UserInfo";
 import TabMenu from "./ProfilePage/TabMenu";
+import AddNewCollectionModal from "../components/AddNewCollectionModal";
 
 const ProfilePage = () => {
   const { user, loading, logout } = useAuth();
-  console.log(user)
+  console.log(user);
   const theme = useTheme();
   const navigate = useNavigate();
-  const [latestData, setLatestData] = useState({ Saved: [], Reviews: [], Collections:[] });
+  const [latestData, setLatestData] = useState({
+    Saved: [],
+    Reviews: [],
+    Collections: [],
+  });
   const [tabValue, setTabValue] = useState("Saved");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
- 
+  const fetchReviews = () =>
+    axios
+      .get(`${process.env.REACT_APP_API_URL}/user/reviews`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
+      .then((response) => response.data.reviews);
 
-  const fetchReviews = ()=> axios.get(`${process.env.REACT_APP_API_URL}/user/reviews`, {
-    headers:{Authorization: `Bearer ${localStorage.getItem('token')}`}
-  }).then(response => response.data.reviews)
+  const fetchSaved = () =>
+    axios
+      .get(`${process.env.REACT_APP_API_URL}/user/recipes`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
+      .then((response) => {
+        return response.data.recipes;
+      });
 
-  const fetchSaved = ()=> axios.get(`${process.env.REACT_APP_API_URL}/user/recipes`, {
-    headers:{Authorization: `Bearer ${localStorage.getItem('token')}`}
-  }).then(response => {
-
-   return response.data.recipes
- })
-
- 
- const fetchCollections = ()=> axios.get(`${process.env.REACT_APP_API_URL}/user/collections/${user.id}`, {
-  headers:{Authorization: `Bearer ${localStorage.getItem('token')}`}
-}).then(response => response.data.collections)
-
+  const fetchCollections = () =>
+    axios
+      .get(`${process.env.REACT_APP_API_URL}/collections?withImage=true`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      })
+      .then((response) => response.data.collections);
 
   useEffect(() => {
-    if(user){
-
-    
-    Promise.allSettled([fetchSaved(), fetchReviews(), fetchCollections()]).then(([saved, reviews, collections]) =>{
-      console.log(saved)
-      setLatestData({...latestData,  Saved:saved.status === 'fulfilled'? saved.value : null, Reviews: reviews.status === 'fulfilled' ? reviews.value : null, Collections: collections.status === 'fulfilled' ? collections.value : null})
-
-
-  }).catch(err => {
-    console.error(err);
-  });
-}
+    if (user) {
+      Promise.allSettled([fetchSaved(), fetchReviews(), fetchCollections()])
+        .then(([saved, reviews, collections]) => {
+          console.log(saved);
+          setLatestData({
+            ...latestData,
+            Saved: saved.status === "fulfilled" ? saved.value : null,
+            Reviews: reviews.status === "fulfilled" ? reviews.value : null,
+            Collections:
+              collections.status === "fulfilled" ? collections.value : null,
+          });
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    }
   }, [user]);
 
   const handleLogout = async () => {
@@ -72,8 +85,14 @@ const ProfilePage = () => {
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
+  };
 
+  const handleOpen = () => {
+    setIsModalOpen(true);
+  };
 
+  const handleClose = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -117,7 +136,6 @@ const ProfilePage = () => {
           {tabValue === "Saved" && (
             <Grid container spacing={2} sx={{ padding: 2 }}>
               {latestData?.Saved?.map((recipe) => (
-
                 <Grid item xs={12} sm={6} md={4} lg={3} key={recipe.id}>
                   <Card sx={{ height: "100%" }}>
                     <CardHeader
@@ -146,39 +164,87 @@ const ProfilePage = () => {
             </Grid>
           )}
 
-
           {tabValue === "Reviews" && (
-            <Box sx = {{display:'flex', flexDirection:'column', gap:2, mt:4}}>
+            <Box
+              sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 4 }}
+            >
               {latestData?.Reviews?.map((review) => (
-               
-                
-                  <Card sx={{ height: "100%", width:'100%'}}>
-                    <CardContent>
-                      <Typography sx = {{display:'block'}}component={Link} to = {`/recipe/${review.recipe_id}`} >  {review.name} </Typography>
-                      <Rating
-                      name = 'read-only'
-                      value = {review.rating}
-                      readOnly
-                      />
-                      <Typography
-                        variant="body2"
-                        color="textSecondary"
-                        component="p"
-                        sx= {{mt:1}}
-                      >
-                        {review.review}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                
-               
+                <Card sx={{ height: "100%", width: "100%" }}>
+                  <CardContent>
+                    <Typography
+                      sx={{ display: "block" }}
+                      component={Link}
+                      to={`/recipe/${review.recipe_id}`}
+                    >
+                      {" "}
+                      {review.name}{" "}
+                    </Typography>
+                    <Rating name="read-only" value={review.rating} readOnly />
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      component="p"
+                      sx={{ mt: 1 }}
+                    >
+                      {review.review}
+                    </Typography>
+                  </CardContent>
+                </Card>
               ))}
             </Box>
           )}
-        
-         {tabValue === 'Collection' &&(
-          <Grid container spacing={2} sx={{ padding: 2 }}/>
-         )}
+
+          {tabValue === "Collections" && (
+            <Container sx={{ position: "relative", mt: 3 }}>
+              <AddNewCollectionModal
+                handleClose={handleClose}
+                isModalOpen={isModalOpen}
+                setLatestData={setLatestData}
+              />
+              <Button
+                onClick={handleOpen}
+                sx={{
+                  width: "fit-content",
+                  minHeight: "2.75rem",
+                  position: "absolute",
+                  right: 0,
+                  top: -9,
+                }}
+              >
+                {" "}
+                Create New Collection{" "}
+              </Button>
+              <Grid container spacing={2} sx={{ padding: 2 }}>
+                {latestData?.Collections?.map((collection) => (
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    lg={3}
+                    key={collection.id}
+                    sx={{ mt: 5 }}
+                  >
+                    <Card sx={{ height: "100%" }}>
+                      <CardHeader
+                        component={Link}
+                        to={`/collections/${collection.id}`}
+                        title={collection.name}
+                        sx={{ textAlign: "center" }}
+                        subheader={collection.countrecipes}
+                      />
+
+                      <CardMedia
+                        component="img"
+                        image={collection.previewimages?.[0]}
+                        sx={{ height: "200px", objectFit: "cover" }}
+                      />
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </Container>
+          )}
         </Container>
       )}
     </Box>

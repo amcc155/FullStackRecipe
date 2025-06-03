@@ -42,12 +42,11 @@ app.get('/api/recipes/search', async(req, res) => {
     const {includeIngredients, excludeIngredients} = req.query
   
     try{
-        const response = await axios.get('https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/complexSearch', {
+        const response = await axios.get('https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/findByIngredients', {
             params:{
                 number:20,
-                includeIngredients: includeIngredients,
-                excludeIngredients: excludeIngredients,
-                fillIngredients: true
+                ingredients: includeIngredients,
+               
             },
             headers:{
                 "x-rapidapi-key":

@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import AddCollectionModal from "./AddCollectionModal";
+import AddRecipeToCollectionModal from "./AddRecipeToCollectionModal";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkAddedIcon from "@mui/icons-material/BookmarkAdded";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -117,7 +117,7 @@ const ActionButtons = ({ recipe }) => {
         position: "relative",
       }}
     >
-      <AddCollectionModal   isOpen={isPopupOpen} recipe = {recipe} />
+      <AddRecipeToCollectionModal   isOpen={isPopupOpen} recipe = {recipe} />
       <AddCircleOutlineIcon sx = {{cursor:'pointer'}} ref = {addCollectionButtonRef}  onClick={handleAddCollectionClick} fontSize="large" />
       {userRecipes.has(recipe.id) ? (
         <BookmarkAddedIcon sx = {{cursor:'pointer'}} onClick={handleBookmarkClick} fontSize="large" />

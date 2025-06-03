@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { Container, Typography, Box } from "@mui/material";
-import Review from "../components/Review";
+import Review from "../../components/Review";
 import { HashLoader } from "react-spinners";
-import ActionButtons from "./RecipePage/ActionButtons";
+import ActionButtons from "./ActionButtons";
 
 const RecipePage = () => {
   const [recipe, setRecipe] = useState({});

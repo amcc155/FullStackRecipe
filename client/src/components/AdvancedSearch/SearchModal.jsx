@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { AdvancedSearchContext } from "../context/AdvancedSearchContext";
+import { AdvancedSearchContext } from "../../context/AdvancedSearchContext";
 import { Link } from 'react-router-dom';
 
 

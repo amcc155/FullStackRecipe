@@ -12,7 +12,8 @@ import PeopleOutlineRoundedIcon from "@mui/icons-material/PeopleOutlineRounded";
 import LinkIcon from "@mui/icons-material/Link";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import CheckIcon from "@mui/icons-material/Check";
-import SideBar from "../components/RandomPage/SideBar";
+import SideBar from './SideBar.jsx'
+
 
 const DailyRandom = () => {
   const [randomRecipes, setRandomRecipes] = useState([]);

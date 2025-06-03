@@ -23,7 +23,7 @@ import EditNoteIcon from "@mui/icons-material/EditNote";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import FeedIcon from "@mui/icons-material/Feed";
 import { Link } from "react-router-dom";
-import { useNavBarContext } from "./context/NavBarContext";
+import { useNavBarContext } from "../context/NavBarContext";
 
 const DrawerList = () => {
   const { user } = useAuth();

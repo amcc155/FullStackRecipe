@@ -1,6 +1,6 @@
 import './App.css';
 import NavBar from './components/NavBar';
-import DailyRandom from './pages/DailyRandom';
+import DailyRandom from './pages/RandomPage/DailyRandom';
 import { ThemeProvider } from '@mui/material/';
 import HomePage from './pages/HomePage';
 import theme from './themes';
@@ -9,13 +9,13 @@ import SearchModal from './components/AdvancedSearch/SearchModal';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import UserRecipes from './pages/UserRecipes';
-import AdvancedSearchContextProvider from './components/context/AdvancedSearchContext';
+import AdvancedSearchContextProvider from './context/AdvancedSearchContext';
 import ExcludeIngredients from './components/AdvancedSearch/ExcludeIngredients';
 import SearchResults from './pages/SearchResults';
 import { AuthProvider } from './context/AuthContext';
 import ProfilePage from './pages/ProfilePage';
-import RecipePage from './pages/RecipePage';
-import { NavBarProvider } from './components/context/NavBarContext';
+import RecipePage from './pages/RecipePage/RecipePage';
+import {NavBarProvider} from './context/NavBarContext'
 import {Box} from '@mui/material/';
 import {useMediaQuery} from '@mui/material/';
 

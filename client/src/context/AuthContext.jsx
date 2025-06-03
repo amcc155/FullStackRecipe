@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
 
  const login = async(info) =>{
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/login`, { // Added template literal
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/login`, { 
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',

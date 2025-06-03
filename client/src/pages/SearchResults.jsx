@@ -21,7 +21,7 @@ const SearchResults = () => {
 
     return (
         <div>
-            {data?.results?.map((recipe) => (
+            {data?.map((recipe) => (
                 <div key={recipe.id}>
                     <h2>{recipe.title}</h2>
                     <img src={recipe.image} alt={recipe.title} />
