@@ -45,6 +45,8 @@ userRouter.post('/recipes', authenticate, async (req, res) => {
       await client.query(query2, values2);
     }
 
+    //check if recipe is already saved
+
     const checkUserRecipes = await client.query(checkUserRecipesQuery, checkUserRecipesValues)
 
     if (checkUserRecipes.rows.length === 0) {
@@ -62,7 +64,7 @@ userRouter.post('/recipes', authenticate, async (req, res) => {
   }
 });
 
-userRouter.get('/likedRecipes', authenticate, async (req, res) => { 
+userRouter.get('/likedRecipes', authenticate, async (req, res) => {
   const query = 'SELECT * FROM userLikedRecipes as ul JOIN recipes as r on ul.recipe_id = r.id WHERE ul.user_id = $1';
   const values = [req.user.id];
   try {
@@ -75,7 +77,7 @@ userRouter.get('/likedRecipes', authenticate, async (req, res) => {
 );
 
 userRouter.post('/likedRecipes', authenticate, async (req, res) => {
-  const {recipeId} = req.body;
+  const { recipeId } = req.body;
   const user_id = req.user.id;
   const query = 'INSERT INTO userLikedRecipes(user_id, recipe_id) VALUES($1, $2) RETURNING *';
   const values = [user_id, recipeId];

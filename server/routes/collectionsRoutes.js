@@ -68,28 +68,28 @@ collectionsRouter.post('/recipe', authenticate, async (req, res) => {
     const query = `WITH inserted AS (
   INSERT INTO collectionsrecipes (collection_id, recipe_id)
   VALUES ($1, $2)
-  RETURNING collection_id
+  RETURNING collection_id, recipe_id
 ),
-images AS (
+combined_links AS (
+  SELECT collection_id, recipe_id FROM collectionsrecipes WHERE collection_id = $1
+  UNION ALL
+  SELECT collection_id, recipe_id FROM inserted 
+),
+count_and_images AS (
   SELECT 
-    cr.collection_id,
+    c.id,
+    c.name,
+    COUNT(cl.recipe_id) AS countRecipes, 
     (array_agg(r.imageURL ORDER BY r.id))[1:3] AS previewImages
-  FROM recipes r
-  LEFT JOIN collectionsrecipes cr ON r.id = cr.recipe_id
-  JOIN inserted ins on ins.collection_id = cr.collection_id
-  GROUP BY cr.collection_id
+  FROM collections c
+  JOIN combined_links cl ON c.id = cl.collection_id 
+  LEFT JOIN recipes r ON r.id = cl.recipe_id
+  WHERE c.id = $1
+  GROUP BY c.id, c.name
+ 
+
 )
-SELECT 
-  c.id, 
-  c.name, 
-  COUNT(cr.recipe_id) AS countRecipes,
-  i.previewImages
-FROM collections c
- JOIN collectionsrecipes cr ON c.id = cr.collection_id
-JOIN inserted ins ON c.id = ins.collection_id
-LEFT JOIN images i ON c.id = i.collection_id
-GROUP BY c.id, i.previewImages, c.name;
-`
+   SELECT * FROM count_and_images;`
 
     //make sure user id equals the user id associated with the collections table
     const verifyQuery = 'SELECT user_id FROM collections WHERE id = $1'

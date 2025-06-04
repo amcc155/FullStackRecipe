@@ -11,25 +11,31 @@ import {
 import { useState } from "react";
 import axios from "axios";
 
-const AddNewCollectionModal = ({ handleClose, isModalOpen }) => {
-    const[collectionName, setCollectionName] = useState('')
-    const[error, setError] = useState('')
+const AddNewCollectionModal = ({ handleClose, isModalOpen, setLatestData }) => {
+  const [collectionName, setCollectionName] = useState("");
+  const [error, setError] = useState("");
 
-    const handleAddCollection = async(e)=>{
-        e.preventDefault()
-        try{
-            await axios.post(`${process.env.REACT_APP_API_URL}/collections` , 
-                {
-                collectionName
-                },
-                {
-                    headers: {Authorization: `Bearer ${localStorage.getItem('token')}`}
-                }
-            )
-        }catch(err){
-            setError(err.message)
+  const handleAddCollection = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/collections`,
+        {
+          collectionName,
+        },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
+      );
+      handleClose();
+      setLatestData((prev) => ({
+        ...prev,
+        Collections: [...prev.Collections, response.data.addedCollection],
+      }));
+    } catch (err) {
+      setError(err.message);
     }
+  };
   return (
     <Modal open={isModalOpen} onClose={handleClose}>
       <Box
@@ -53,14 +59,30 @@ const AddNewCollectionModal = ({ handleClose, isModalOpen }) => {
             Create Collection{" "}
           </Typography>
 
-          <TextField onChange = {(e) => setCollectionName(e.target.value)} id="name" label="name" type="text" placeholder="name" />
-       
-        {/* Buttons */}
-        <Stack direction="row" spacing={2}>
-          <Button onClick = {handleClose} variant = 'outlined' sx = {{flex:1, backgroundColor: 'white', color: 'black'}}> Cancel </Button>
-          <Button variant = 'contained' sx = {{flex:1}} type="submit"> Add </Button>
-        </Stack>
-      </Box>
+          <TextField
+            onChange={(e) => setCollectionName(e.target.value)}
+            id="name"
+            label="name"
+            type="text"
+            placeholder="name"
+          />
+
+          {/* Buttons */}
+          <Stack direction="row" spacing={2}>
+            <Button
+              onClick={handleClose}
+              variant="outlined"
+              sx={{ flex: 1, backgroundColor: "white", color: "black" }}
+            >
+              {" "}
+              Cancel{" "}
+            </Button>
+            <Button variant="contained" sx={{ flex: 1 }} type="submit">
+              {" "}
+              Add{" "}
+            </Button>
+          </Stack>
+        </Box>
       </Box>
     </Modal>
   );

@@ -13,27 +13,27 @@ import AdvancedSearchContextProvider from './context/AdvancedSearchContext';
 import ExcludeIngredients from './components/AdvancedSearch/ExcludeIngredients';
 import SearchResults from './pages/SearchResults';
 import { AuthProvider } from './context/AuthContext';
-import ProfilePage from './pages/ProfilePage';
+import ProfilePage from './pages/ProfilePage/ProfilePage';
 import RecipePage from './pages/RecipePage/RecipePage';
-import {NavBarProvider} from './context/NavBarContext'
-import {Box} from '@mui/material/';
-import {useMediaQuery} from '@mui/material/';
+import { NavBarProvider } from './context/NavBarContext'
+import { Box } from '@mui/material/';
+import { useMediaQuery } from '@mui/material/';
 
 
-  
+
 const Layout = () => {
   const isMedium = useMediaQuery(`(min-width:768px)`)
-  return(
+  return (
 
-  
-  <>
-  <Box sx = {{ display: isMedium? 'flex': 'block', minHeight: isMedium ? '100dvh' : 'auto'}}>
-    <NavBar />
-    <Box sx = {{flexGrow:1, height: isMedium? '100dvh': 'calc(100dvh - 54px)' }}>
-    <Outlet />
-    </Box>
-    </Box>
-  </>
+
+    <>
+      <Box sx={{ display: isMedium ? 'flex' : 'block', minHeight: isMedium ? '100dvh' : 'auto' }}>
+        <NavBar />
+        <Box sx={{ flexGrow: 1, height: isMedium ? '100dvh' : 'calc(100dvh - 54px)' }}>
+          <Outlet />
+        </Box>
+      </Box>
+    </>
   )
 }
 const router = createBrowserRouter([
@@ -47,13 +47,13 @@ const router = createBrowserRouter([
       },
 
       {
-        path:'/profile',
-        element: <ProfilePage/>,
+        path: '/profile',
+        element: <ProfilePage />,
       },
 
       {
-      path:'/recipe/:id',
-      element: <RecipePage/>
+        path: '/recipe/:id',
+        element: <RecipePage />
       },
 
       {
@@ -63,57 +63,57 @@ const router = createBrowserRouter([
         )
       },
       {
-      path:"/recipes/results",
-      element:(
-        <SearchResults/>
-      )
+        path: "/recipes/results",
+        element: (
+          <SearchResults />
+        )
 
-    },
-    {
-      path:'/user/recipes',
-      element:<UserRecipes/>
-    }
+      },
+      {
+        path: '/user/recipes',
+        element: <UserRecipes />
+      }
     ],
   },
-    {
+  {
 
-    path:'/advanced/search',
-    element: <SearchModal/>
-    },
-    {
-      path:'advanced/search/exclude',
-      element: <ExcludeIngredients/>
-    },
-    {
-      path:'/signup',
-      element: <Signup/>
-    },
-{
-    path:'/login',
-    element:<Login/>,
+    path: '/advanced/search',
+    element: <SearchModal />
   },
-  
-  
+  {
+    path: 'advanced/search/exclude',
+    element: <ExcludeIngredients />
+  },
+  {
+    path: '/signup',
+    element: <Signup />
+  },
+  {
+    path: '/login',
+    element: <Login />,
+  },
+
+
 
 
 ])
 
 function App() {
   return (
-    
+
     <AuthProvider>
       <NavBarProvider>
-  <AdvancedSearchContextProvider>
-      <ThemeProvider theme={theme}>
-      <RouterProvider router={router}>
-        <HomePage />
-        </RouterProvider>
-      </ThemeProvider>
-    </AdvancedSearchContextProvider>
-    </NavBarProvider>
+        <AdvancedSearchContextProvider>
+          <ThemeProvider theme={theme}>
+            <RouterProvider router={router}>
+              <HomePage />
+            </RouterProvider>
+          </ThemeProvider>
+        </AdvancedSearchContextProvider>
+      </NavBarProvider>
     </AuthProvider>
-   
-    
+
+
   );
 }
 
