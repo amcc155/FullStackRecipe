@@ -12,11 +12,10 @@ import {
   Avatar,
   Button,
   AppBar,
- 
   Toolbar,
   useMediaQuery,
 } from "@mui/material";
-import MenuIcon from '@mui/icons-material/Menu';
+import MenuIcon from "@mui/icons-material/Menu";
 import { useAuth } from "../context/AuthContext";
 import FoodBankIcon from "@mui/icons-material/FoodBank";
 import EditNoteIcon from "@mui/icons-material/EditNote";
@@ -24,6 +23,8 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import FeedIcon from "@mui/icons-material/Feed";
 import { Link } from "react-router-dom";
 import { useNavBarContext } from "../context/NavBarContext";
+import ShuffleIcon from "@mui/icons-material/Shuffle";
+import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 
 const DrawerList = () => {
   const { user } = useAuth();
@@ -51,22 +52,33 @@ const DrawerList = () => {
           </ListItemIcon>
           <ListItemText primary="Feed" />
         </ListItem>
+        <Divider />
+        <ListItem button component={Link} to="/random/daily">
+          <ListItemIcon>
+            <ShuffleIcon />
+          </ListItemIcon>
+          <ListItemText primary="Daily Random" />
+        </ListItem>
+        <ListItem button component={Link} to="#">
+          <ListItemIcon>
+            <PersonSearchIcon />
+          </ListItemIcon>
+          <ListItemText primary="Search Users" />
+        </ListItem>
       </List>
     </Box>
   );
 };
 
 const NavBar = () => {
-  const {toggleDrawer, open} = useNavBarContext()
+  const { toggleDrawer, open } = useNavBarContext();
   const isMedium = useMediaQuery("(min-width:768px)");
 
-
   const drawerWidth = 250;
-  
 
   return (
     <Box sx={{ display: "flex" }}>
-      {isMedium ?(
+      {isMedium ? (
         <Drawer
           variant="permanent"
           sx={{
@@ -82,32 +94,30 @@ const NavBar = () => {
         >
           <DrawerList />
         </Drawer>
-      ):(
-
+      ) : (
         <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="static">
-          <Toolbar>
-            <IconButton onClick = {()=> toggleDrawer(open)}
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-              sx={{ mr: 2 }}
-              
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              News
-            </Typography>
-            <Button color="inherit">Login</Button>
-          </Toolbar>
-        </AppBar>
-        <Drawer open={open} onClose={() => toggleDrawer(false)}>
-       <DrawerList/>
-     </Drawer>
-      </Box>
-     
+          <AppBar position="static">
+            <Toolbar>
+              <IconButton
+                onClick={() => toggleDrawer(open)}
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="menu"
+                sx={{ mr: 2 }}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                News
+              </Typography>
+              <Button color="inherit">Login</Button>
+            </Toolbar>
+          </AppBar>
+          <Drawer open={open} onClose={() => toggleDrawer(false)}>
+            <DrawerList />
+          </Drawer>
+        </Box>
       )}
     </Box>
   );
