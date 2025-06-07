@@ -1,18 +1,25 @@
-import { List, ListItem, Card, CardContent, CardMedia, Box} from "@mui/material";
+import {
+  List,
+  ListItem,
+  Card,
+  CardContent,
+  CardMedia,
+  Box,
+} from "@mui/material";
 
-const SideBar = ({randomRecipes, setSelectedRecipe}) => {
+const SideBar = ({ randomRecipes, setSelectedRecipe }) => {
   return (
     <Box
       component="aside"
       sx={{
         width: "25%",
-        
+
         overflow: "scroll",
         flexShrink: 0,
       }}
     >
       <List>
-        {randomRecipes.map((recipe) => (
+        {randomRecipes?.map((recipe) => (
           <ListItem disableGutters key={recipe.id}>
             <Card
               onClick={() => setSelectedRecipe(recipe)}

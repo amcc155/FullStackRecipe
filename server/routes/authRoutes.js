@@ -8,16 +8,16 @@ const authRouter = Router();
 authRouter.post('/signup', async (req, res) => {
     const { username, password } = req.body;
 
-    if(!username || !password){
-        res.status(400).json({error: 'Username and password are required'});
+    if (!username || !password) {
+        res.status(400).json({ error: 'Username and password are required' });
         return;
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const query = 'INSERT INTO users(username, password) VALUES($1, $2) RETURNING *';
+    const query = 'INSERT INTO users(username, password) VALUES($1, $2) RETURNING username';
     const values = [username, hashedPassword];
- 
+
 
     try {
         const response = await client.query(query, values);
@@ -41,7 +41,7 @@ authRouter.post('/login', async (req, res) => {
             return;
         }
         const token = jwt.sign({ userId: user.id }, process.env.SECRET, { expiresIn: '1h' });
-        res.status(200).json({ token});
+        res.status(200).json({ token });
     } catch (err) {
         res.status(500).json({ error: 'Error logging in' });
     }
