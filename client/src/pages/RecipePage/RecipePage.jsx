@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { Container, Typography, Box } from "@mui/material";
-import Review from "../../components/Review";
+import Review from "./Review";
 import { HashLoader } from "react-spinners";
 import ActionButtons from "./ActionButtons";
 
@@ -27,7 +27,6 @@ const RecipePage = () => {
 
   return recipe.title ? (
     <Container sx={{ mt: 4 }} maxWidth="md">
-     
       <Box
         sx={{
           display: "flex",
@@ -37,10 +36,9 @@ const RecipePage = () => {
         }}
       >
         <Typography variant="h2"> {recipe.title} </Typography>
-        <ActionButtons recipe = {recipe}/>
-        
+        <ActionButtons recipe={recipe} />
       </Box>
-      
+
       <Box sx={{ display: "flex", gap: 2 }}>
         <Typography> {recipe.aggregateLikes} Likes </Typography>
         <Typography
@@ -52,9 +50,7 @@ const RecipePage = () => {
           {" "}
           Original Source{" "}
         </Typography>
-       
       </Box>
-      
 
       <hr></hr>
       <Typography

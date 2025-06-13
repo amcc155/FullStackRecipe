@@ -6,8 +6,7 @@ const axios = require('axios')
 require('dotenv').config();
 
 //get all collectoins
-//check if request tries to get it with the first image of each collection recipe
-collectionsRouter.get('/', authenticate, async (req, res) => {
+collectionsRouter.get('/collections', authenticate, async (req, res) => {
     const user_id = req.user?.id
 
     const values = [user_id]
@@ -133,6 +132,18 @@ collectionsRouter.post('/', authenticate, async (req, res) => {
         res.status(500).json({ error: err.message })
     }
 
+
+})
+
+collectionsRouter.get('/user/:userId/collections', async (req, res) => {
+    const user = req.user?.id
+    const query = 'SELECT * FROM collections as c JOIN users as u on c.user_id = u.id where c.user_id = $1'
+    try {
+        const response = await client.query(query, [user])
+        res.json({ collections: response.rows })
+    } catch (err) {
+        res.status(500).json({ error: err.message })
+    }
 
 })
 

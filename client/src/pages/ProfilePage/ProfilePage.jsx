@@ -36,14 +36,12 @@ const ProfilePage = () => {
 
   const fetchReviews = () =>
     axios
-      .get(`${process.env.REACT_APP_API_URL}/user/reviews`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      })
+      .get(`${process.env.REACT_APP_API_URL}/users/${user.id}/reviews`)
       .then((response) => response.data.reviews);
 
   const fetchSaved = () =>
     axios
-      .get(`${process.env.REACT_APP_API_URL}/user/recipes`, {
+      .get(`${process.env.REACT_APP_API_URL}/recipes/saved`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
       .then((response) => {

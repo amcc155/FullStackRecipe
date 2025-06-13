@@ -5,8 +5,8 @@ const authenticate = require('../middleware/authenticate');
 
 const reviewRouter = Router();
 
-//post a recipe by id
-reviewRouter.post('/:recipeId', authenticate, async (req, res) => {
+//post a rreview to a recipe by id
+reviewRouter.post('/recipes/:recipeId/reviews', authenticate, async (req, res) => {
     const { recipeId } = req.params;
     const { rating, review } = req.body;
     const userId = req.user.id;
@@ -22,33 +22,43 @@ reviewRouter.post('/:recipeId', authenticate, async (req, res) => {
 `;
     const values = [rating, review, recipeId, userId];
 
-    try{
+    try {
         const response = await client.query(query, values);
         res.json({ review: response.rows[0] });
-    }catch(err){
+    } catch (err) {
         console.error(err);
         res.status(500).json({ error: err.message });
     }
 })
 
-//get a review by id
-reviewRouter.get('/:recipeId', async (req, res) => {
+//get reviews that use has made
+reviewRouter.get('/users/:userId/reviews', async (req, res) => {
+    const user = req.params.userId
+    const query = 'SELECT * FROM reviews as r JOIN recipes as rcp on r.recipe_id = rcp.id  where r.user_id = $1'
+    try {
+        const response = await client.query(query, [user])
+        res.json({ reviews: response.rows })
+    } catch (err) {
+        res.status(500).json({ error: err.message })
+    }
+})
+
+//get reviews by recipe id and include user information
+reviewRouter.get('/recipes/:recipeId/reviews', async (req, res) => {
     const { recipeId } = req.params;
     const query = 'SELECT * FROM reviews as r JOIN users as u on r.user_id = u.id WHERE recipe_id = $1';
     const values = [recipeId];
 
-    try{
+    try {
         const response = await client.query(query, values);
         console.log(response.rows);
         res.json({ reviews: response.rows });
-    }catch(err){
+    } catch (err) {
         console.error(err);
         res.status(500).json({ error: err.message });
     }
 })
 
-//get a reviews by id
-reviewRouter.get
 
 
 
