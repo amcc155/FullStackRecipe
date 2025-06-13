@@ -139,7 +139,6 @@ const ActionButtons = ({ recipe }) => {
         fontSize="large"
         sx={{
           cursor: "pointer",
-          ml: 2,
           color: userLikedRecipes.has(recipe.id) ? "red" : "gray",
         }}
       />
