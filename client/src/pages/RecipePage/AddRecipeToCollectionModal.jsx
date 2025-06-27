@@ -74,10 +74,12 @@ const AddRecipeToCollectionModal = ({ isOpen, recipe }) => {
         sx={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))",
+          pt: 1,
 
           boxSizing: "border-box",
           gridGap: 10,
           width: 300,
+          overflow: "scroll",
           height: 450,
           backgroundColor: "white",
           position: "absolute",
@@ -94,6 +96,7 @@ const AddRecipeToCollectionModal = ({ isOpen, recipe }) => {
               width: "100%",
               height: "auto",
               aspectRatio: "1",
+              pb: 2,
             }}
           >
             <Card sx={{ height: "100%", width: "100%" }}>
