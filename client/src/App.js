@@ -18,7 +18,10 @@ import RecipePage from './pages/RecipePage/RecipePage';
 import { NavBarProvider } from './context/NavBarContext'
 import { Box } from '@mui/material/';
 import { useMediaQuery } from '@mui/material/';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
+
+const queryClient = new QueryClient()
 
 
 const Layout = () => {
@@ -37,6 +40,8 @@ const Layout = () => {
   )
 }
 const router = createBrowserRouter([
+
+
   {
     path: '/',
     element: <Layout />,
@@ -104,14 +109,20 @@ function App() {
     <AuthProvider>
       <NavBarProvider>
         <AdvancedSearchContextProvider>
+
           <ThemeProvider theme={theme}>
-            <RouterProvider router={router}>
-              <HomePage />
-            </RouterProvider>
+            <QueryClientProvider client={queryClient}>
+              <RouterProvider router={router}>
+                <HomePage />
+              </RouterProvider>
+            </QueryClientProvider>
+
           </ThemeProvider>
         </AdvancedSearchContextProvider>
+
+
       </NavBarProvider>
-    </AuthProvider>
+    </AuthProvider >
 
 
   );

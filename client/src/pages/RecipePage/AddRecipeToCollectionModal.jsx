@@ -10,59 +10,63 @@ import { useEffect, useState } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "../../context/AuthContext";
 
 const AddRecipeToCollectionModal = ({ isOpen, recipe }) => {
-  const [collections, setCollections] = useState([]);
-  const [error, setError] = useState("");
+  const { user } = useAuth();
+  console.log(user);
 
-  useEffect(() => {
-    const fetchCollections = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/collections`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-        setCollections(response.data.collections);
-        console.log(response.data.collections);
-      } catch (err) {
-        setError(err);
+  const fetchCollections = async () => {
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_URL}/collections`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       }
-    };
-    fetchCollections();
-  }, []);
+    );
+    return response.data.collections;
+  };
+
+  const {
+    data: collections,
+    isPending,
+    isError,
+  } = useQuery({
+    queryFn: fetchCollections,
+    staleTime: Infinity,
+    queryKey: ["collections", user?.id],
+  });
 
   //function to add recipe to collection on click
-  const handleAddCollectionClick = async (recipe, collectionId) => {
-    try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/collections/recipe`,
-        {
-          collectionId: collectionId,
-          recipeId: recipe,
-        },
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
-      );
-      setCollections((prev) =>
-        prev.map((collections) =>
-          collections.id === response.data.addedCollection.id
-            ? {
-                ...collections,
-                countrecipes: response.data.addedCollection.countrecipes,
-                previewimages: response.data.addedCollection.previewimages,
-              }
-            : collections
-        )
-      );
-    } catch (err) {
-      setError(error);
-    }
-  };
+  // const handleAddCollectionClick = async (recipe, collectionId) => {
+  //   try {
+  //     const response = await axios.post(
+  //       `${process.env.REACT_APP_API_URL}/collections/recipe`,
+  //       {
+  //         collectionId: collectionId,
+  //         recipeId: recipe,
+  //       },
+  //       {
+  //         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  //       }
+  //     );
+  //     setCollections((prev) =>
+  //       prev.map((collections) =>
+  //         collections.id === response.data.addedCollection.id
+  //           ? {
+  //               ...collections,
+  //               countrecipes: response.data.addedCollection.countrecipes,
+  //               previewimages: response.data.addedCollection.previewimages,
+  //             }
+  //           : collections
+  //       )
+  //     );
+  //   } catch (err) {
+  //     setError(error);
+  //   }
+  // };
 
   return (
     isOpen && (
@@ -137,9 +141,9 @@ const AddRecipeToCollectionModal = ({ isOpen, recipe }) => {
               }}
             >
               <Button
-                onClick={() =>
-                  handleAddCollectionClick(recipe.id, collection.id)
-                }
+                onClick={""}
+                // handleAddCollectionClick(recipe.id, collection.id)
+
                 variant="contained"
                 startIcon={<AddIcon />}
                 sx={{ bgcolor: "white", color: "black" }}

@@ -8,10 +8,11 @@ import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import CheckIcon from "@mui/icons-material/Check";
 import SideBar from "./SideBar.jsx";
 import { HashLoader } from "react-spinners";
+import RecipeGridLayout from "../../layouts/RecipeGridLayout.jsx";
 
 const DailyRandom = () => {
   const [randomRecipes, setRandomRecipes] = useState([]);
-  const [selectedRecipe, setSelectedRecipe] = useState();
+
   useEffect(() => {
     const recipes = localStorage.getItem("randomRecipes");
     const latestFetch = localStorage.getItem("latestFetch");
@@ -23,7 +24,6 @@ const DailyRandom = () => {
 
       if (hoursDiff < 24) {
         setRandomRecipes(JSON.parse(recipes));
-        setSelectedRecipe(JSON.parse(recipes)[0]);
         return;
       }
     }
@@ -39,7 +39,6 @@ const DailyRandom = () => {
         );
         localStorage.setItem("latestFetch", new Date());
         setRandomRecipes(response.data.recipes);
-        setSelectedRecipe(response.data.recipes[0]);
       } catch (err) {
         console.error(err);
       }
@@ -48,143 +47,10 @@ const DailyRandom = () => {
     fetchData();
   }, []);
 
-  const handleBookmarkClick = () => {
-    console.log("Bookmark clicked");
-    axios.post(
-      `${process.env.REACT_APP_API_URL}/user/recipes`,
-      {
-        recipeId: selectedRecipe.id,
-        name: selectedRecipe.title,
-        url: selectedRecipe.image,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
-  };
-
   return (
     <>
       {randomRecipes.length > 0 ? (
-        <Box
-          sx={{
-            display: "flex",
-            height: "100%",
-          }}
-        >
-          {/* start of sidebar */}
-
-          <SideBar
-            randomRecipes={randomRecipes}
-            setSelectedRecipe={setSelectedRecipe}
-          />
-
-          <Box
-            component="main"
-            sx={{
-              width: "100%",
-              display: "flex",
-              flexDirection: "column",
-              overflow: "scroll",
-            }}
-          >
-            <img
-              style={{ width: "40%", margin: "0 auto", display: "block" }}
-              src={selectedRecipe?.image}
-              alt={selectedRecipe?.title || "Recipe Image"}
-            />
-
-            <Container
-              disableGutters
-              maxWidth="xl"
-              sx={{
-                bgcolor: "#f5f5f5",
-                px: 5,
-                width: "100%",
-                minHeight: "10%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Stack direction="row" spacing={7}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    gap: 1,
-                  }}
-                >
-                  <AccessTimeIcon />
-                  <Typography>
-                    {" "}
-                    {`${selectedRecipe?.readyInMinutes} MINUTES`}{" "}
-                  </Typography>
-                </Box>
-
-                <Box sx={{ display: "flex", gap: 1 }}>
-                  <PeopleOutlineRoundedIcon />
-                  <Typography>
-                    {" "}
-                    {`${selectedRecipe?.servings} SERVINGS`}{" "}
-                  </Typography>
-                </Box>
-              </Stack>
-              <Stack direction="row" spacing={2} sx={{}}>
-                <a
-                  href={selectedRecipe?.sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <LinkIcon />
-                </a>
-                <BookmarkBorderIcon onClick={handleBookmarkClick} />
-              </Stack>
-            </Container>
-            <Container
-              maxWidth="xl"
-              disableGutters
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                flexGrow: 1,
-                alignItems: "center",
-                flexDirection: "column",
-                pt: 2,
-                backgroundColor: "#d3d3d3",
-              }}
-            >
-              <Typography
-                sx={{
-                  mb: 4,
-                }}
-                variant="h4"
-              >
-                {" "}
-                Recipe Ingredients{" "}
-              </Typography>
-
-              <Grid2
-                container
-                justifyContent={"space-between"}
-                spacing={2}
-                sx={{
-                  width: "60%",
-                }}
-              >
-                {selectedRecipe?.extendedIngredients.map((ingredient) => (
-                  <Grid2 item size={5}>
-                    <Stack direction="row" alignItems="center">
-                      <CheckIcon />
-                      <Typography color=""> {ingredient.original} </Typography>
-                    </Stack>
-                  </Grid2>
-                ))}
-              </Grid2>
-            </Container>
-          </Box>
-        </Box>
+        <RecipeGridLayout data={randomRecipes} title={"Daily Randoms"} />
       ) : (
         <Box
           sx={{

@@ -1,34 +1,32 @@
+import { Container, Typography, Box, Grid, Tooltip } from "@mui/material";
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import RecipeGridLayout from "../layouts/RecipeGridLayout";
 
 const SearchResults = () => {
-    const [data, setData] = useState([]);
-    let [params] = useSearchParams();
+  let [params] = useSearchParams();
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const queryString = params.toString();
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/api/recipes/search?${queryString}`);
-                const data = await response.json();
-                setData(data);
-            } catch (err) {
-                console.error(err);
-            }
-        };
-        fetchData();
-    }, [params]);
+  const fetchData = async () => {
+    try {
+      const queryString = params.toString();
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/recipes/search?${queryString}`
+      );
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-    return (
-        <div>
-            {data?.map((recipe) => (
-                <div key={recipe.id}>
-                    <h2>{recipe.title}</h2>
-                    <img src={recipe.image} alt={recipe.title} />
-                </div>
-            ))}
-        </div>
-    );
+  const { data, isPending, isError } = useQuery({
+    queryKey: ["search", params],
+    queryFn: fetchData,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  return <RecipeGridLayout data={data} title={"Search Results"} />;
 };
 
 export default SearchResults;
