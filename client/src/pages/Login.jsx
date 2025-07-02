@@ -7,6 +7,7 @@ import {
   Container,
   Typography,
   Box,
+  Snackbar,
 } from "@mui/material";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -21,6 +22,8 @@ const Login = () => {
     password: "",
   });
 
+  const [loginError, setLoginError] = useState("");
+
   const handleInputChange = (e) => {
     setLoginInfo({ ...loginInfo, [e.target.name]: e.target.value });
   };
@@ -30,8 +33,12 @@ const Login = () => {
       await login(loginInfo);
       navigate("/");
     } catch (err) {
-      console.error(err);
+      setLoginError(err.message);
     }
+  };
+
+  const onClose = () => {
+    setLoginError("");
   };
 
   return (
@@ -97,6 +104,14 @@ const Login = () => {
           Don't have an account? <Link to="/signup"> Signup </Link>{" "}
         </Typography>
       </Box>
+      {loginError && (
+        <Snackbar
+          open={!!loginError}
+          autoHideDuration={2000}
+          message={loginError}
+          onClose={onClose}
+        />
+      )}
     </Container>
   );
 };
