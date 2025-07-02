@@ -44,7 +44,7 @@ authRouter.post('/login', async (req, res) => {
             return;
         }
         const token = jwt.sign({ userId: user.id }, process.env.SECRET, { expiresIn: '1h' });
-        return es.status(200).json({ token });
+        return res.status(200).json({ token });
     } catch (err) {
 
         return res.status(500).json({ error: 'Error logging in' });

@@ -35,7 +35,7 @@ const ActionButtons = ({ recipe }) => {
           },
         }
       );
-      return new Set(response.data.recipes.map((recipe) => recipe.id));
+      return new Set(response.data?.recipes?.map((recipe) => recipe.id));
     },
   });
 

@@ -7,6 +7,7 @@ import {
   Container,
   Typography,
   Box,
+  Snackbar,
 } from "@mui/material";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -17,8 +18,14 @@ const Signup = () => {
     password: "",
   });
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handleInputChange = (e) => {
     setLoginInfo({ ...loginInfo, [e.target.name]: e.target.value });
+  };
+
+  const handleSnackBarClose = () => {
+    setErrorMessage("");
   };
 
   const Signup = async () => {
@@ -33,10 +40,17 @@ const Signup = () => {
           body: JSON.stringify(loginInfo),
         }
       );
+
+      //handle http errors
+      if (!response.ok) {
+        const data = await response.json();
+        console.log(data);
+        throw new Error(data.error || "Request Failed");
+      }
       const data = await response.json();
-      console.log(data);
+      setErrorMessage("");
     } catch (err) {
-      console.error(err);
+      setErrorMessage(err.message);
     }
   };
 
@@ -100,6 +114,15 @@ const Signup = () => {
           {" "}
           Already have an account? <Link to="/login"> Login </Link>{" "}
         </Typography>
+
+        {errorMessage && (
+          <Snackbar
+            open={!!errorMessage}
+            autoHideDuration={2000}
+            message={errorMessage}
+            onClose={handleSnackBarClose}
+          />
+        )}
       </Box>
     </Container>
   );

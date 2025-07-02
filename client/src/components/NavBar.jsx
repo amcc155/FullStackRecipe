@@ -25,17 +25,22 @@ import { Link } from "react-router-dom";
 import { useNavBarContext } from "../context/NavBarContext";
 import ShuffleIcon from "@mui/icons-material/Shuffle";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 const DrawerList = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+
   return (
     <Box
       sx={{
         width: 250,
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
+        alignItems: "",
         mt: 2,
+        justifyContent: "space-between",
+        height: "100%",
+        pb: 5,
       }}
     >
       <List>
@@ -59,6 +64,7 @@ const DrawerList = () => {
           </ListItemIcon>
           <ListItemText primary="Daily Random" />
         </ListItem>
+        <Divider />
         <ListItem button component={Link} to="#">
           <ListItemIcon>
             <PersonSearchIcon />
@@ -66,6 +72,17 @@ const DrawerList = () => {
           <ListItemText primary="Search Users" />
         </ListItem>
       </List>
+
+      {user && (
+        <List>
+          <ListItem button onClick={logout}>
+            <ListItemIcon>
+              <LogoutIcon />
+            </ListItemIcon>
+            <ListItemText primary="Logout" />
+          </ListItem>
+        </List>
+      )}
     </Box>
   );
 };
