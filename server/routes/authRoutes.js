@@ -21,10 +21,13 @@ authRouter.post('/signup', async (req, res) => {
 
     try {
         const response = await client.query(query, values);
-        res.json({ user: response.rows[0] });
+        return res.json({ user: response.rows[0] });
 
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        if (err.code === '23505') {
+            return res.status(409).json({ error: 'Username already in use' })
+        }
+        return res.status(500).json({ error: err.message });
     }
 });
 
@@ -41,9 +44,10 @@ authRouter.post('/login', async (req, res) => {
             return;
         }
         const token = jwt.sign({ userId: user.id }, process.env.SECRET, { expiresIn: '1h' });
-        res.status(200).json({ token });
+        return es.status(200).json({ token });
     } catch (err) {
-        res.status(500).json({ error: 'Error logging in' });
+
+        return res.status(500).json({ error: 'Error logging in' });
     }
 });
 

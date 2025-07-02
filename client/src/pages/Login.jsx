@@ -1,79 +1,104 @@
-import { FormControl, InputLabel, Input, Grid, Button, Container, Typography, Box } from "@mui/material";
+import {
+  FormControl,
+  InputLabel,
+  Input,
+  Grid,
+  Button,
+  Container,
+  Typography,
+  Box,
+} from "@mui/material";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
+const Login = () => {
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
-const Login= () => {
-    const {login} = useAuth();
-    const navigate = useNavigate();
+  const [loginInfo, setLoginInfo] = useState({
+    username: "",
+    password: "",
+  });
 
-    const [loginInfo, setLoginInfo] = useState({
-        username: '',
-        password: ''
-    });
+  const handleInputChange = (e) => {
+    setLoginInfo({ ...loginInfo, [e.target.name]: e.target.value });
+  };
 
-    const handleInputChange = (e) => {
-        setLoginInfo({ ...loginInfo, [e.target.name]: e.target.value });
+  const handleLogin = async () => {
+    try {
+      await login(loginInfo);
+      navigate("/");
+    } catch (err) {
+      console.error(err);
     }
+  };
 
-    const handleLogin = async () => {
-        try {
-            await login(loginInfo);
-            navigate('/');
-        } catch (err) {
-            
-            console.error(err);
-    }
-}
+  return (
+    <Container
+      maxWidth="sm"
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "calc(100vh - 64px)",
+        mt: 5,
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 2,
+          width: "100%",
+        }}
+      >
+        <Typography variant="h4" sx={{}}>
+          Login
+        </Typography>
 
-    return (
-        <Container
-            maxWidth="sm"
-            sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                minHeight: "calc(100vh - 64px)",
-                mt: 5,
-            }}
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <FormControl fullWidth>
+              <InputLabel htmlFor="username">Username</InputLabel>
+              <Input
+                onChange={handleInputChange}
+                id="username"
+                name="username"
+                aria-describedby="username-helper-text"
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <FormControl fullWidth>
+              <InputLabel htmlFor="password">Password</InputLabel>
+              <Input
+                onChange={handleInputChange}
+                id="password"
+                name="password"
+                type="password"
+              />
+            </FormControl>
+          </Grid>
+        </Grid>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleLogin}
+          sx={{ mt: 2 }}
         >
-            <Box
-                sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: 2,
-                    width: "100%",
-                }}
-            >
-                <Typography variant="h4" sx={{ mb: 2 }}>Login</Typography>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <FormControl fullWidth>
-                            <InputLabel htmlFor='username'>Username</InputLabel>
-                            <Input onChange={handleInputChange} id='username' name='username' aria-describedby='username-helper-text' />
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <FormControl fullWidth>
-                            <InputLabel htmlFor='password'>Password</InputLabel>
-                            <Input onChange={handleInputChange} id='password' name='password' type='password' />
-                        </FormControl>
-                    </Grid>
-                </Grid>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleLogin}
-                    sx={{ mt: 2 }}
-                >
-                    Signup
-                </Button>
-            </Box>
-        </Container>
-    );
+          Login
+        </Button>
+
+        <Typography component="p">
+          {" "}
+          Don't have an account? <Link to="/signup"> Signup </Link>{" "}
+        </Typography>
+      </Box>
+    </Container>
+  );
 };
 
 export default Login;
