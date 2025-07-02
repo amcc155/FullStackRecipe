@@ -1,78 +1,67 @@
-import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Container,
-  Typography,
-  Card,
-  CardHeader,
-  CardMedia,
-  CardContent,
-  Grid,
-  Rating,
-  Button,
-} from "@mui/material";
+import React, { useState } from "react";
+import { Box, Container } from "@mui/material";
 import { useAuth } from "../../context/AuthContext";
 import { useTheme } from "@mui/material/styles";
-import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import UserInfo from "./UserInfo";
 import TabMenu from "./TabMenu";
-import AddNewCollectionModal from "../../components/AddNewCollectionModal";
+import SavedSection from "./SavedSection";
 import ReviewsSection from "./ReviewsSection";
 import CollectionsSections from "./CollectionsSection";
-import SavedSection from "./SavedSection";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 const ProfilePage = () => {
   const { user, loading, logout } = useAuth();
-  console.log(user);
   const theme = useTheme();
   const navigate = useNavigate();
-  const [latestData, setLatestData] = useState({
-    Saved: [],
-    Reviews: [],
-    Collections: [],
-  });
   const [tabValue, setTabValue] = useState("Saved");
 
-  const fetchReviews = () =>
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/users/${user.id}/reviews`)
-      .then((response) => response.data.reviews);
+  // Fetch saved recipes
+  const {
+    data: savedRecipes,
+    isLoading: isLoadingSaved,
+    isError,
+  } = useQuery({
+    queryKey: ["savedRecipes", user?.id],
+    queryFn: async () => {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/recipes/saved`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      return response.data.recipes;
+    },
+    enabled: !!user, // Only fetch if the user is logged in
+  });
 
-  const fetchSaved = () =>
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/recipes/saved`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      })
-      .then((response) => {
-        return response.data.recipes;
-      });
+  // Fetch user reviews
+  const { data: userReviews, isLoading: isLoadingReviews } = useQuery({
+    queryKey: ["userReviews", user?.id],
+    queryFn: async () => {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/users/${user.id}/reviews`
+      );
+      return response.data.reviews;
+    },
+    enabled: !!user, // Only fetch if the user is logged in
+  });
 
-  const fetchCollections = () =>
-    axios
-      .get(`${process.env.REACT_APP_API_URL}/collections?withImage=true`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      })
-      .then((response) => response.data.collections);
-
-  useEffect(() => {
-    if (user) {
-      Promise.allSettled([fetchSaved(), fetchReviews(), fetchCollections()])
-        .then(([saved, reviews, collections]) => {
-          console.log(saved);
-          setLatestData({
-            ...latestData,
-            Saved: saved.status === "fulfilled" ? saved.value : null,
-            Reviews: reviews.status === "fulfilled" ? reviews.value : null,
-            Collections:
-              collections.status === "fulfilled" ? collections.value : null,
-          });
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    }
-  }, [user]);
+  // Fetch user collections
+  const { data: userCollections, isLoading: isLoadingCollections } = useQuery({
+    queryKey: ["userCollections", user?.id],
+    queryFn: async () => {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/collections?withImage=true`,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      return response.data.collections;
+    },
+    enabled: !!user, // Only fetch if the user is logged in
+  });
 
   const handleLogout = async () => {
     try {
@@ -105,9 +94,7 @@ const ProfilePage = () => {
         <Container
           sx={{
             overflow: "scroll",
-
             height: "100%",
-
             borderRadius: 2,
             border: `2px solid ${theme.palette.primary.main}`,
             position: "relative",
@@ -118,22 +105,20 @@ const ProfilePage = () => {
           <UserInfo user={user} />
 
           {/* Tabs */}
-
           <TabMenu
             tabValue={tabValue}
             theme={theme}
             handleTabChange={handleTabChange}
           />
 
-          {tabValue === "Saved" && <SavedSection latestData={latestData} />}
-
-          {tabValue === "Reviews" && <ReviewsSection latestData={latestData} />}
-
+          {tabValue === "Saved" && (
+            <SavedSection latestData={savedRecipes || []} />
+          )}
+          {tabValue === "Reviews" && (
+            <ReviewsSection latestData={userReviews || []} />
+          )}
           {tabValue === "Collections" && (
-            <CollectionsSections
-              latestData={latestData}
-              setLatestData={setLatestData}
-            />
+            <CollectionsSections latestData={userCollections || []} />
           )}
         </Container>
       )}

@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 const SavedSection = ({ latestData }) => {
   return (
     <Grid container spacing={2} sx={{ padding: 2 }}>
-      {latestData?.Saved?.map((recipe) => (
+      {latestData?.map((recipe) => (
         <Grid item xs={12} sm={6} md={4} lg={3} key={recipe.id}>
           <Card sx={{ height: "100%" }}>
             <CardHeader
@@ -36,4 +36,5 @@ const SavedSection = ({ latestData }) => {
     </Grid>
   );
 };
+
 export default SavedSection;

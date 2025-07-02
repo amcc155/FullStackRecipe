@@ -4,16 +4,15 @@ import { Link } from "react-router-dom";
 const ReviewsSection = ({ latestData }) => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 4 }}>
-      {latestData?.Reviews?.map((review) => (
-        <Card sx={{ height: "100%", width: "100%" }}>
+      {latestData?.map((review) => (
+        <Card key={review.id} sx={{ height: "100%", width: "100%" }}>
           <CardContent>
             <Typography
               sx={{ display: "block" }}
               component={Link}
               to={`/recipe/${review.recipe_id}`}
             >
-              {" "}
-              {review.name}{" "}
+              {review.name}
             </Typography>
             <Rating name="read-only" value={review.rating} readOnly />
             <Typography
@@ -30,4 +29,5 @@ const ReviewsSection = ({ latestData }) => {
     </Box>
   );
 };
+
 export default ReviewsSection;

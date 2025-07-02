@@ -2,7 +2,8 @@ const Router = require('express').Router;
 const authenticate = require('../middleware/authenticate');
 const collectionsRouter = Router();
 const client = require('../db');
-const axios = require('axios')
+const axios = require('axios');
+const addExternalRecipeToDb = require('../utils/addExternalRecipeToDb');
 require('dotenv').config();
 
 //get all collectoins
@@ -61,9 +62,13 @@ collectionsRouter.get('/collections', authenticate, async (req, res) => {
 // })
 
 //add to collection
-collectionsRouter.post('/recipe', authenticate, async (req, res) => {
-    const { collectionId, recipeId } = req.body
+collectionsRouter.post('/collections/recipe', authenticate, async (req, res) => {
+    const { collectionId, recipeId, recipeName, recipeUrl } = req.body
+    const user_id = req.user?.id
+
     const values = [collectionId, recipeId]
+
+
     const query = `WITH inserted AS (
   INSERT INTO collectionsrecipes (collection_id, recipe_id)
   VALUES ($1, $2)
@@ -91,24 +96,32 @@ count_and_images AS (
    SELECT * FROM count_and_images;`
 
     //make sure user id equals the user id associated with the collections table
-    const verifyQuery = 'SELECT user_id FROM collections WHERE id = $1'
-    const verifyQueryValues = [collectionId]
-    try {
-        const response = await client.query(verifyQuery, verifyQueryValues)
-        if (response.rows.length <= 0) {
-            return res.status(403).json({ error: 'Not authorized to add to collection' })
+    const verifyQuery = 'SELECT user_id FROM collections WHERE id = $1 and user_id = $2'
+    const verifyQueryValues = [collectionId, user_id]
 
-        }
-    } catch (err) {
-        res.status(500).json({ error: err.message })
-    }
 
     //insert into table 
     try {
+        //start transactoin
+        await client.query('BEGIN')
+
+        //add recipe if does not exists
+        await addExternalRecipeToDb(recipeId, recipeName, recipeUrl)
+
+        //if user odes not own collection
+        const verifyResponse = await client.query(verifyQuery, verifyQueryValues)
+        if (verifyResponse.rows.length <= 0) {
+            return res.status(403).json({ error: 'Not authorized to add to collection' })
+
+        }
         const response = await client.query(query, values)
-        res.json({ addedCollection: response.rows[0] })
+        await client.query('COMMIT')
+        return res.json({ addedCollection: response.rows[0] })
+
     } catch (err) {
-        res.status(500).json({ error: err.message })
+        await client.query('ROLLBACK')
+        return res.status(500).json({ error: err.message })
+
     }
 })
 
@@ -119,7 +132,7 @@ collectionsRouter.post('/', authenticate, async (req, res) => {
     const { collectionName } = req.body
     const userId = req.user?.id
     if (collectionName.length >= 50) {
-        res.status(400).json({ error: 'Collection Name must be under 50 characters' })
+        return res.status(400).json({ error: 'Collection Name must be under 50 characters' })
     }
 
     const query = 'INSERT INTO collections (user_id, name) VALUES ($1, $2) RETURNING *'
@@ -127,9 +140,9 @@ collectionsRouter.post('/', authenticate, async (req, res) => {
 
     try {
         const response = await client.query(query, values)
-        res.json({ addedCollection: response.rows[0] })
+        return res.json({ addedCollection: response.rows[0] })
     } catch (err) {
-        res.status(500).json({ error: err.message })
+        return res.status(500).json({ error: err.message })
     }
 
 
@@ -140,9 +153,9 @@ collectionsRouter.get('/user/:userId/collections', async (req, res) => {
     const query = 'SELECT * FROM collections as c JOIN users as u on c.user_id = u.id where c.user_id = $1'
     try {
         const response = await client.query(query, [user])
-        res.json({ collections: response.rows })
+        return res.json({ collections: response.rows })
     } catch (err) {
-        res.status(500).json({ error: err.message })
+        return res.status(500).json({ error: err.message })
     }
 
 })

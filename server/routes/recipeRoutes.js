@@ -2,20 +2,22 @@ const Router = require('express').Router;
 const authenticate = require('../middleware/authenticate');
 const recipeRouter = Router();
 const client = require('../db');
+const addExternalRecipeToDb = require('../utils/addExternalRecipeToDb');
 require('dotenv').config();
 
 
 //user posting a like recipe
 recipeRouter.post('/recipes/:recipeId/liked', authenticate, async (req, res) => {
-    const { recipeId } = req.body;
+    const { recipeId } = req.params;
     const user_id = req.user.id;
     const query = 'INSERT INTO userLikedRecipes(user_id, recipe_id) VALUES($1, $2) RETURNING *';
     const values = [user_id, recipeId];
     try {
+        await client.query('BEGIN')
         const response = await client.query(query, values);
-        res.json({ recipe: response.rows[0] });
+        return res.json({ recipe: response.rows[0] });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: err.message });
     }
 }
 );
@@ -28,9 +30,9 @@ recipeRouter.get('/users/:userid/liked', async (req, res) => {
     const values = [userId];
     try {
         const response = await client.query(query, values);
-        res.json({ recipes: response.rows });
+        return res.json({ recipes: response.rows });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: err.message });
     }
 }
 );
@@ -41,9 +43,9 @@ recipeRouter.get('/recipes/saved', authenticate, async (req, res) => {
     const values = [req.user?.id];
     try {
         const response = await client.query(query, values);
-        res.json({ recipes: response.rows });
+        return res.json({ recipes: response.rows });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: err.message });
     }
 });
 
@@ -53,38 +55,33 @@ recipeRouter.post('/recipes/:recipeId/saved', authenticate, async (req, res) => 
     const { recipeId } = req.params
     const query1 = 'INSERT INTO usersrecipes(user_id, recipe_id) VALUES($1, $2) RETURNING *';
     const values1 = [req.user.id, recipeId];
-    const currentRecipesQuery = 'Select * from recipes where id = $1'
     const checkUserRecipesQuery = 'Select * from usersrecipes where user_id = $1 and recipe_id = $2'
     const checkUserRecipesValues = [req.user.id, recipeId]
 
-    const query2 = 'INSERT INTO recipes(id, name, imageUrl) VALUES($1, $2, $3) RETURNING *';
-    const values2 = [recipeId, name, url];
+
 
     try {
         await client.query('BEGIN');
-        const currentRecipes = await client.query(currentRecipesQuery, [recipeId])
 
-        //check if recipe already exists in the recipe table
-        if (currentRecipes.rows.length === 0) {
-            await client.query(query2, values2);
-        }
-
+        //insert the recipe into recipe table. if recipe is already there because another user inserted, it will ignore the error
+        await addExternalRecipeToDb(recipeId, name, url)
         //check if recipe is already saved
 
         const checkUserRecipes = await client.query(checkUserRecipesQuery, checkUserRecipesValues)
 
         if (checkUserRecipes.rows.length === 0) {
             const response = await client.query(query1, values1);
-            res.json({ recipe: response.rows[0] });
+            await client.query('COMMIT');
+            return res.json({ recipe: response.rows[0] });
         } else {
-            res.status(409).json({ error: 'Recipe already saved' })
+            return res.status(409).json({ error: 'Recipe already saved' })
         }
 
-        await client.query('COMMIT');
+
 
     } catch (err) {
         await client.query('ROLLBACK');
-        res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: err.message });
     }
 });
 

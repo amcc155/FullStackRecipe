@@ -9,6 +9,7 @@ import {
 import AddNewCollectionModal from "../../components/AddNewCollectionModal";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+
 const CollectionsSections = ({ latestData, setLatestData }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -37,11 +38,10 @@ const CollectionsSections = ({ latestData, setLatestData }) => {
           top: -9,
         }}
       >
-        {" "}
-        Create New Collection{" "}
+        Create New Collection
       </Button>
       <Grid container spacing={2} sx={{ padding: 2 }}>
-        {latestData?.Collections?.map((collection) => (
+        {latestData?.map((collection) => (
           <Grid
             item
             xs={12}
@@ -57,7 +57,7 @@ const CollectionsSections = ({ latestData, setLatestData }) => {
                 to={`/collections/${collection.id}`}
                 title={collection.name}
                 sx={{ textAlign: "center" }}
-                subheader={collection.countrecipes}
+                subheader={`${collection.countrecipes} recipes`}
               />
 
               <CardMedia
@@ -72,4 +72,5 @@ const CollectionsSections = ({ latestData, setLatestData }) => {
     </Container>
   );
 };
+
 export default CollectionsSections;

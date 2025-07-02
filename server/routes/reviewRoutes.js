@@ -24,10 +24,10 @@ reviewRouter.post('/recipes/:recipeId/reviews', authenticate, async (req, res) =
 
     try {
         const response = await client.query(query, values);
-        res.json({ review: response.rows[0] });
+        return res.json({ review: response.rows[0] });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: err.message });
     }
 })
 
@@ -37,9 +37,9 @@ reviewRouter.get('/users/:userId/reviews', async (req, res) => {
     const query = 'SELECT * FROM reviews as r JOIN recipes as rcp on r.recipe_id = rcp.id  where r.user_id = $1'
     try {
         const response = await client.query(query, [user])
-        res.json({ reviews: response.rows })
+        return res.json({ reviews: response.rows })
     } catch (err) {
-        res.status(500).json({ error: err.message })
+        return res.status(500).json({ error: err.message })
     }
 })
 
@@ -52,10 +52,10 @@ reviewRouter.get('/recipes/:recipeId/reviews', async (req, res) => {
     try {
         const response = await client.query(query, values);
         console.log(response.rows);
-        res.json({ reviews: response.rows });
+        return res.json({ reviews: response.rows });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: err.message });
     }
 })
 

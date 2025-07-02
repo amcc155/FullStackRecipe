@@ -8,7 +8,7 @@ require('dotenv').config();
 
 //gets user details
 userRouter.get('/', authenticate, async (req, res) => {
-  res.json({ user: req.user });
+  return res.json({ user: req.user });
 
 });
 

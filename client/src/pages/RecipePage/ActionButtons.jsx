@@ -1,76 +1,32 @@
-import { Box } from "@mui/material";
+import { Box, Snackbar, Alert } from "@mui/material";
 import AddRecipeToCollectionModal from "./AddRecipeToCollectionModal";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import BookmarkAddedIcon from "@mui/icons-material/BookmarkAdded";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import axios from "axios";
-import { useEffect, useState, useRef } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState, useRef } from "react";
 import { useAuth } from "../../context/AuthContext";
+import axios from "axios";
 
 const ActionButtons = ({ recipe }) => {
-  const [userRecipes, setUserRecipes] = useState(new Set());
-  const [userLikedRecipes, setUserLikedRecipes] = useState(new Set());
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const addCollectionButtonRef = useRef();
-  const { user } = useAuth();
 
-  useEffect(() => {
-    getUserSavedRecipes();
-    getUserLikedRecipes();
-  }, []);
+  // Snackbar state for error handling
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isErrorToastOpen, setIsErrorToastOpen] = useState(false);
 
-  useEffect(() => {
-    const handleOutsideClick = (e) => {
-      if (
-        e.target &&
-        addCollectionButtonRef.current &&
-        !addCollectionButtonRef.current.contains(e.target)
-      ) {
-        setIsPopupOpen(false);
-      }
-    };
-    if (isPopupOpen === false) {
-      window.removeEventListener("click", handleOutsideClick);
-    } else {
-      window.addEventListener("click", handleOutsideClick);
-    }
-  }, [isPopupOpen]);
-
-  const handleBookmarkClick = async () => {
-    console.log("Bookmark clicked");
-    await axios.post(
-      `${process.env.REACT_APP_API_URL}/recipes/${recipe.id}/saved`,
-      {
-        name: recipe.title,
-        url: recipe.image,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
+  const handleErrorToastClose = () => {
+    setIsErrorToastOpen(false);
   };
 
-  const handleLikeClick = async () => {
-    try {
-      await axios.post(
-        `${process.env.REACT_APP_API_URL}/recipes/${recipe.id}/liked`,
-
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const getUserSavedRecipes = async () => {
-    try {
+  // Fetch user saved recipes
+  const { data: userRecipes, isLoading: isLoadingSavedRecipes } = useQuery({
+    queryKey: ["savedRecipes", user?.id],
+    queryFn: async () => {
       const response = await axios.get(
         `${process.env.REACT_APP_API_URL}/recipes/saved`,
         {
@@ -79,25 +35,96 @@ const ActionButtons = ({ recipe }) => {
           },
         }
       );
-      setUserRecipes(new Set(response.data.recipes.map((recipe) => recipe.id)));
-    } catch (err) {
-      console.error(err);
+      return new Set(response.data.recipes.map((recipe) => recipe.id));
+    },
+  });
+
+  // Fetch user liked recipes
+  const { data: userLikedRecipes, isLoading: isLoadingLikedRecipes } = useQuery(
+    {
+      queryKey: ["likedRecipes", user?.id],
+      queryFn: async () => {
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_URL}/users/${user.id}/liked`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        return new Set(response.data.recipes.map((recipe) => recipe.id));
+      },
+    }
+  );
+
+  // Mutation to save a recipe
+  const saveRecipeMutation = useMutation({
+    mutationFn: async () => {
+      await axios.post(
+        `${process.env.REACT_APP_API_URL}/recipes/${recipe.id}/saved`,
+        {
+          name: recipe.title,
+          url: recipe.image,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["savedRecipes", user?.id]);
+    },
+    onError: (error) => {
+      console.error("Failed to save recipe:", error);
+      setErrorMessage("Failed to save recipe. Please try again.");
+      setIsErrorToastOpen(true);
+    },
+  });
+
+  // Mutation to like a recipe
+  const likeRecipeMutation = useMutation({
+    mutationFn: async () => {
+      await axios.post(
+        `${process.env.REACT_APP_API_URL}/recipes/${recipe.id}/liked`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["likedRecipes", user?.id]);
+    },
+    onError: (error) => {
+      console.error("Failed to like recipe:", error);
+      setErrorMessage("Failed to like recipe. Please try again.");
+      setIsErrorToastOpen(true);
+    },
+  });
+
+  // Handle outside click to close the popup
+  const handleOutsideClick = (e) => {
+    if (
+      e.target &&
+      addCollectionButtonRef.current &&
+      !addCollectionButtonRef.current.contains(e.target)
+    ) {
+      setIsPopupOpen(false);
     }
   };
 
-  const getUserLikedRecipes = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/users/${user.id}/liked`,
-        {}
-      );
-      setUserLikedRecipes(
-        new Set(response.data.recipes.map((recipe) => recipe.id))
-      );
-    } catch (err) {
-      console.error(err);
+  // Add event listener for outside click
+  useState(() => {
+    if (isPopupOpen) {
+      window.addEventListener("click", handleOutsideClick);
+    } else {
+      window.removeEventListener("click", handleOutsideClick);
     }
-  };
+  }, [isPopupOpen]);
 
   const handleAddCollectionClick = () => {
     setIsPopupOpen(!isPopupOpen);
@@ -119,29 +146,40 @@ const ActionButtons = ({ recipe }) => {
         onClick={handleAddCollectionClick}
         fontSize="large"
       />
-      {userRecipes.has(recipe.id) ? (
+      {userRecipes?.has(recipe.id) ? (
         <BookmarkAddedIcon
           sx={{ cursor: "pointer" }}
-          onClick={handleBookmarkClick}
+          onClick={() => saveRecipeMutation.mutate()}
           fontSize="large"
         />
       ) : (
         <BookmarkBorderIcon
           sx={{ cursor: "pointer" }}
-          onClick={handleBookmarkClick}
+          onClick={() => saveRecipeMutation.mutate()}
           fontSize="large"
         />
       )}
 
       <FavoriteIcon
-        onClick={handleLikeClick}
-        fill={userLikedRecipes.has(recipe.id) ? "red" : ""}
+        onClick={() => likeRecipeMutation.mutate()}
         fontSize="large"
         sx={{
           cursor: "pointer",
-          color: userLikedRecipes.has(recipe.id) ? "red" : "gray",
+          color: userLikedRecipes?.has(recipe.id) ? "red" : "gray",
         }}
       />
+
+      {/* Snackbar for error toast notifications */}
+      <Snackbar
+        open={isErrorToastOpen}
+        autoHideDuration={3000}
+        onClose={handleErrorToastClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert onClose={handleErrorToastClose} severity="error">
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
