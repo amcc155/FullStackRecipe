@@ -10,7 +10,7 @@ import AddNewCollectionModal from "../../components/AddNewCollectionModal";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-const CollectionsSections = ({ latestData, setLatestData }) => {
+const CollectionsSections = ({ latestData }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOpen = () => {
@@ -26,7 +26,6 @@ const CollectionsSections = ({ latestData, setLatestData }) => {
       <AddNewCollectionModal
         handleClose={handleClose}
         isModalOpen={isModalOpen}
-        setLatestData={setLatestData}
       />
       <Button
         onClick={handleOpen}

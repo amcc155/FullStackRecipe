@@ -26,6 +26,7 @@ import { useNavBarContext } from "../context/NavBarContext";
 import ShuffleIcon from "@mui/icons-material/Shuffle";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import LogoutIcon from "@mui/icons-material/Logout";
+import HomeIcon from "@mui/icons-material/Home";
 
 const DrawerList = () => {
   const { user, logout } = useAuth();
@@ -44,18 +45,18 @@ const DrawerList = () => {
       }}
     >
       <List>
+        <ListItem button component={Link} to="/">
+          <ListItemIcon>
+            <HomeIcon />
+          </ListItemIcon>
+          <ListItemText primary="Home" />
+        </ListItem>
+        <Divider />
         <ListItem button component={Link} to={user ? "/profile" : "/login"}>
           <ListItemIcon>
             <AccountCircleIcon />
           </ListItemIcon>
           <ListItemText primary={user ? "Profile" : "Login"} />
-        </ListItem>
-        <Divider />
-        <ListItem button component={Link} to="/">
-          <ListItemIcon>
-            <FeedIcon />
-          </ListItemIcon>
-          <ListItemText primary="Feed" />
         </ListItem>
         <Divider />
         <ListItem button component={Link} to="/random/daily">

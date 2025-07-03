@@ -10,32 +10,40 @@ import {
 
 import { useState } from "react";
 import axios from "axios";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useAuth } from "../context/AuthContext";
 
-const AddNewCollectionModal = ({ handleClose, isModalOpen, setLatestData }) => {
+const AddNewCollectionModal = ({ handleClose, isModalOpen }) => {
   const [collectionName, setCollectionName] = useState("");
-  const [error, setError] = useState("");
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const handleAddCollection = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/collections`,
-        {
-          collectionName,
-        },
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
-      );
-      handleClose();
-      setLatestData((prev) => ({
-        ...prev,
-        Collections: [...prev.Collections, response.data.addedCollection],
-      }));
-    } catch (err) {
-      setError(err.message);
-    }
+    await axios.post(
+      `${process.env.REACT_APP_API_URL}/collections`,
+      {
+        collectionName,
+      },
+      {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      }
+    );
+    handleClose();
   };
+
+  const mutation = useMutation({
+    mutationFn: handleAddCollection,
+    onSuccess: () => queryClient.invalidateQueries(["collections", user.id]),
+    onError: (err) => {
+      console.error();
+    },
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    mutation.mutate();
+  };
+
   return (
     <Modal open={isModalOpen} onClose={handleClose}>
       <Box
@@ -52,7 +60,7 @@ const AddNewCollectionModal = ({ handleClose, isModalOpen, setLatestData }) => {
         <Box
           component="form"
           sx={{ display: "flex", flexDirection: "column", gap: "2rem" }}
-          onSubmit={handleAddCollection}
+          onSubmit={handleSubmit}
         >
           <Typography sx={{}} variant="h2">
             {" "}

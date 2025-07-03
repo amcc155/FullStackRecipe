@@ -17,10 +17,25 @@ recipeRouter.post('/recipes/:recipeId/liked', authenticate, async (req, res) => 
         const response = await client.query(query, values);
         return res.json({ recipe: response.rows[0] });
     } catch (err) {
-        return res.status(500).json({ error: err.message });
+        return res.status(500).json({ error: 'Something went wrong' });
     }
 }
 );
+
+//user deleting a liked recipe
+recipeRouter.delete('/recipes/:recipeid/liked', authenticate, async (req, res) => {
+    const { recipeId } = req.params
+    const userId = req.user?.id
+    const deleteQuery = 'DELETE FROM userLikedRecipes WHERE user_id = $1 and recipe_id = $2 returning *';
+    const deleteValues = [userId, recipeId]
+
+    try {
+        const response = await client.query(deleteQuery, deleteValues)
+        return res.json({ recipe: response.rows[0] })
+    } catch (err) {
+        return res.status(500).json({ error: 'Something went wrong' })
+    }
+})
 
 
 //getting user liked recipe
@@ -85,4 +100,21 @@ recipeRouter.post('/recipes/:recipeId/saved', authenticate, async (req, res) => 
     }
 });
 
+//delete recipe from saved
+recipeRouter.delete('/recipes/:recipeId/saved', authenticate, async (req, res) => {
+    const { recipeId } = req.params
+    const userId = req.user?.id
+    const deleteRecipeQuery = 'DELETE FROM usersrecipes where user_id = $1 and recipe_id = $2 returning *'
+    const deleteValues = [userId, recipeId]
+
+    try {
+        const response = await client.query(deleteRecipeQuery, deleteValues)
+        return res.json({ recipe: response.rows[0] })
+    } catch (err) {
+        return res.status(500).json({ error: 'Something went wrong' })
+
+    }
+
+
+})
 module.exports = recipeRouter

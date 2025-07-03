@@ -5,7 +5,7 @@ import BookmarkAddedIcon from "@mui/icons-material/BookmarkAdded";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
 
@@ -35,7 +35,10 @@ const ActionButtons = ({ recipe }) => {
           },
         }
       );
-      return new Set(response.data?.recipes?.map((recipe) => recipe.id));
+      return {
+        recipesSet: new Set(response.data?.recipes?.map((recipe) => recipe.id)),
+        recipes: response.data.recipes,
+      };
     },
   });
 
@@ -52,7 +55,10 @@ const ActionButtons = ({ recipe }) => {
             },
           }
         );
-        return new Set(response.data.recipes.map((recipe) => recipe.id));
+        return {
+          recipes: response.data.recipes,
+          recipesSet: new Set(response.data.recipes.map((recipe) => recipe.id)),
+        };
       },
     }
   );
@@ -83,6 +89,27 @@ const ActionButtons = ({ recipe }) => {
     },
   });
 
+  //remove recipe from saved
+  const removeSavedRecipeMutation = useMutation({
+    mutationFn: async () => {
+      await axios.delete(
+        `${process.env.REACT_APP_API_URL}/recipes/${recipe.id}/saved`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries(["savedRecipes", user?.id]);
+    },
+  });
+
   // Mutation to like a recipe
   const likeRecipeMutation = useMutation({
     mutationFn: async () => {
@@ -106,6 +133,27 @@ const ActionButtons = ({ recipe }) => {
     },
   });
 
+  //remove recipe from liked
+  const removeLikedRecipeMutation = useMutation({
+    mutationFn: async () => {
+      await axios.delete(
+        `${process.env.REACT_APP_API_URL}/recipes/${recipe.id}/liked`,
+
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["likedRecipes", user?.id]);
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  });
+
   // Handle outside click to close the popup
   const handleOutsideClick = (e) => {
     if (
@@ -118,7 +166,7 @@ const ActionButtons = ({ recipe }) => {
   };
 
   // Add event listener for outside click
-  useState(() => {
+  useEffect(() => {
     if (isPopupOpen) {
       window.addEventListener("click", handleOutsideClick);
     } else {
@@ -146,10 +194,10 @@ const ActionButtons = ({ recipe }) => {
         onClick={handleAddCollectionClick}
         fontSize="large"
       />
-      {userRecipes?.has(recipe.id) ? (
+      {userRecipes?.recipesSet?.has(recipe.id) ? (
         <BookmarkAddedIcon
           sx={{ cursor: "pointer" }}
-          onClick={() => saveRecipeMutation.mutate()}
+          onClick={() => removeSavedRecipeMutation.mutate()}
           fontSize="large"
         />
       ) : (
@@ -161,11 +209,15 @@ const ActionButtons = ({ recipe }) => {
       )}
 
       <FavoriteIcon
-        onClick={() => likeRecipeMutation.mutate()}
+        onClick={
+          userLikedRecipes?.recipesSet?.has(recipe.id)
+            ? () => removeLikedRecipeMutation.mutate()
+            : () => likeRecipeMutation.mutate()
+        }
         fontSize="large"
         sx={{
           cursor: "pointer",
-          color: userLikedRecipes?.has(recipe.id) ? "red" : "gray",
+          color: userLikedRecipes?.recipesSet?.has(recipe.id) ? "red" : "gray",
         }}
       />
 

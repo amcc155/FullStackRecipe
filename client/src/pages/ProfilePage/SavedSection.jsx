@@ -9,6 +9,7 @@ import {
 import { Link } from "react-router-dom";
 
 const SavedSection = ({ latestData }) => {
+  console.log(latestData);
   return (
     <Grid container spacing={2} sx={{ padding: 2 }}>
       {latestData?.map((recipe) => (

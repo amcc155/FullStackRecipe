@@ -12,9 +12,8 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 const ProfilePage = () => {
-  const { user, loading, logout } = useAuth();
+  const { user, loading } = useAuth();
   const theme = useTheme();
-  const navigate = useNavigate();
   const [tabValue, setTabValue] = useState("Saved");
 
   // Fetch saved recipes
@@ -31,10 +30,15 @@ const ProfilePage = () => {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
-      return response.data.recipes;
+      return {
+        recipes: response.data.recipes,
+        recipesSet: new Set(response.data.recipes.map((recipe) => recipe.id)),
+      };
     },
     enabled: !!user, // Only fetch if the user is logged in
   });
+
+  console.log(savedRecipes);
 
   // Fetch user reviews
   const { data: userReviews, isLoading: isLoadingReviews } = useQuery({
@@ -62,15 +66,6 @@ const ProfilePage = () => {
     },
     enabled: !!user, // Only fetch if the user is logged in
   });
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate("/");
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -112,7 +107,7 @@ const ProfilePage = () => {
           />
 
           {tabValue === "Saved" && (
-            <SavedSection latestData={savedRecipes || []} />
+            <SavedSection latestData={savedRecipes?.recipes || []} />
           )}
           {tabValue === "Reviews" && (
             <ReviewsSection latestData={userReviews || []} />

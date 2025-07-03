@@ -83,7 +83,7 @@ const AddRecipeToCollectionModal = ({ isOpen, recipe }) => {
             border: "2px solid orange",
           }}
         >
-          {collections.map((collection, index) => (
+          {collections?.map((collection, index) => (
             <Box
               key={collection.id}
               sx={{

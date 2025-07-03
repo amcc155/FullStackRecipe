@@ -128,7 +128,7 @@ count_and_images AS (
 
 
 //add a collection
-collectionsRouter.post('/', authenticate, async (req, res) => {
+collectionsRouter.post('/collections', authenticate, async (req, res) => {
     const { collectionName } = req.body
     const userId = req.user?.id
     if (collectionName.length >= 50) {
