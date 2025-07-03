@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 
 const CollectionsSections = ({ latestData }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  console.log(latestData);
   const handleOpen = () => {
     setIsModalOpen(true);
   };

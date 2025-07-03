@@ -34,10 +34,12 @@ reviewRouter.post('/recipes/:recipeId/reviews', authenticate, async (req, res) =
 //get reviews that use has made
 reviewRouter.get('/users/:userId/reviews', async (req, res) => {
     const user = req.params.userId
-    const query = 'SELECT * FROM reviews as r JOIN recipes as rcp on r.recipe_id = rcp.id  where r.user_id = $1'
+    const query = 'SELECT r.id, r.user_id, r.rating, r.review, rcp.name, rcp.id as "recipeId", rcp.imageURL FROM reviews as r JOIN recipes as rcp on r.recipe_id = rcp.id  where r.user_id = $1'
     try {
         const response = await client.query(query, [user])
+        console.log(response.rows)
         return res.json({ reviews: response.rows })
+
     } catch (err) {
         return res.status(500).json({ error: err.message })
     }

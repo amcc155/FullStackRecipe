@@ -2,6 +2,7 @@ import { Box, Card, Rating, Typography, CardContent } from "@mui/material";
 import { Link } from "react-router-dom";
 
 const ReviewsSection = ({ latestData }) => {
+  console.log(latestData);
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 4 }}>
       {latestData?.map((review) => (
@@ -10,7 +11,7 @@ const ReviewsSection = ({ latestData }) => {
             <Typography
               sx={{ display: "block" }}
               component={Link}
-              to={`/recipe/${review.recipe_id}`}
+              to={`/recipe/${review.recipeId}`}
             >
               {review.name}
             </Typography>
