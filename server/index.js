@@ -11,9 +11,9 @@ const recipeRouter = require('./routes/recipeRoutes.js');
 app.use(express.json());
 
 
-app.use(cors({
-    origin: 'http://localhost:3000',
-}));
+
+// Serve static files from /public
+app.use(express.static(path.join(__dirname, 'public')));
 
 const api_key = process.env.RAPIDAPI_KEY
 
@@ -119,7 +119,7 @@ app.use('/', reviewRouter)
 app.use('/', collectionsRouter)
 app.use('/', recipeRouter)
 
-
-app.listen(3001, () => {
-    console.log('listenig on port 3001')
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+    console.log('listenig on port')
 })
