@@ -53,7 +53,9 @@ const CollectionsSections = ({ latestData }) => {
             <Card sx={{ height: "100%" }}>
               <CardHeader
                 component={Link}
-                to={`/collections/${collection.id}`}
+                to={`/collections/${
+                  collection.id
+                }?collectionName=${encodeURIComponent(collection.name)}`}
                 title={collection.name}
                 sx={{ textAlign: "center" }}
                 subheader={`${collection.countrecipes} recipes`}

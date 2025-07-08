@@ -3,6 +3,7 @@ import NavBar from './components/NavBar';
 import DailyRandom from './pages/RandomPage/DailyRandom';
 import { ThemeProvider } from '@mui/material/';
 import HomePage from './pages/HomePage';
+import CollectionPage from './pages/CollectionPage';
 import theme from './themes';
 import { createBrowserRouter, RouterProvider, Outlet, BrowserRouter } from 'react-router-dom';
 import SearchModal from './components/AdvancedSearch/SearchModal';
@@ -77,6 +78,10 @@ const router = createBrowserRouter([
       {
         path: '/user/recipes',
         element: <UserRecipes />
+      },
+      {
+        path: '/collections/:id',
+        element: <CollectionPage />
       }
     ],
   },

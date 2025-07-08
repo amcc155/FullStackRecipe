@@ -148,16 +148,35 @@ collectionsRouter.post('/collections', authenticate, async (req, res) => {
 
 })
 
+//get collecctions that belong to user, anyone can view for now. probabiy change privacy later
 collectionsRouter.get('/user/:userId/collections', async (req, res) => {
-    const user = req.user?.id
+    const { userId } = req.params
     const query = 'SELECT * FROM collections as c JOIN users as u on c.user_id = u.id where c.user_id = $1'
     try {
-        const response = await client.query(query, [user])
+        const response = await client.query(query, [userId])
         return res.json({ collections: response.rows })
     } catch (err) {
         return res.status(500).json({ error: err.message })
     }
 
 })
+
+//get the recipes that belong to a certain collection
+collectionsRouter.get('/collections/:collectionId/recipes', authenticate, async (req, res) => {
+    const userId = req.user?.id
+    const { collectionId } = req.params
+    const collectionRecipesQuery = 'SELECT r.id, c.id as "collectionId", r.name as "title", c.name as "collectionName", r.imageurl as image from collections c join collectionsrecipes cr on c.id = cr.collection_id JOIN recipes r on r.id = cr.recipe_id where c.id = $1 and c.user_id = $2'
+    const collectionRecipeValues = [collectionId, userId]
+
+    try {
+        const response = await client.query(collectionRecipesQuery, collectionRecipeValues)
+        return res.json({ recipes: response.rows })
+
+    } catch (err) {
+        return res.status(500).json({ error: err.message })
+    }
+})
+
+
 
 module.exports = collectionsRouter

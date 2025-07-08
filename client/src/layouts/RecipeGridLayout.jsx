@@ -1,6 +1,6 @@
 import { Container, Typography, Grid, Box, Tooltip } from "@mui/material";
 import { Link } from "react-router-dom";
-const RecipeGridLayout = ({ data, title }) => {
+const RecipeGridLayout = ({ data, title = null }) => {
   return (
     <Container sx={{ mt: 2 }}>
       <Typography sx={{ mb: 2 }} variant="h2">
