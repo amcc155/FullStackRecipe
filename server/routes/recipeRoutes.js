@@ -30,6 +30,7 @@ recipeRouter.post('/recipes/:recipeId/liked', authenticate, async (req, res) => 
 recipeRouter.delete('/recipes/:recipeid/liked', authenticate, async (req, res) => {
     const { recipeId } = req.params
     const userId = req.user?.id
+    console.log(userId)
     const deleteQuery = 'DELETE FROM userlikedrecipes WHERE user_id = $1 and recipe_id = $2 returning *';
     const deleteValues = [userId, recipeId]
 
