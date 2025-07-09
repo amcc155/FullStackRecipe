@@ -12,11 +12,15 @@ recipeRouter.post('/recipes/:recipeId/liked', authenticate, async (req, res) => 
     const user_id = req.user.id;
     const query = 'INSERT INTO userLikedRecipes(user_id, recipe_id) VALUES($1, $2) RETURNING *';
     const values = [user_id, recipeId];
+    await client.query('BEGIN')
     try {
-        await client.query('BEGIN')
+
         const response = await client.query(query, values);
+        await client.query('COMMIT')
         return res.json({ recipe: response.rows[0] });
+
     } catch (err) {
+        await client.query('ROLLBACK')
         return res.status(500).json({ error: 'Something went wrong' });
     }
 }
