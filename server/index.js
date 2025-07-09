@@ -34,7 +34,8 @@ app.get('/api/random/recipes', async (req, res) => {
         res.json(response.data)
 
     } catch (err) {
-        console.error(err)
+        console.error(err.response?.status, err.response?.data || err.message);
+
         res.status(500).json({ error: err.message })
     }
 })
