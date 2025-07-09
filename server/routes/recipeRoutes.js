@@ -27,7 +27,7 @@ recipeRouter.post('/recipes/:recipeId/liked', authenticate, async (req, res) => 
 );
 
 //user deleting a liked recipe
-recipeRouter.delete('/recipes/:recipeid/liked', authenticate, async (req, res) => {
+recipeRouter.delete('/recipes/:recipeId/liked', authenticate, async (req, res) => {
     const { recipeId } = req.params
     const userId = req.user?.id
     console.log(userId)
