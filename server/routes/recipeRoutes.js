@@ -10,7 +10,7 @@ require('dotenv').config();
 recipeRouter.post('/recipes/:recipeId/liked', authenticate, async (req, res) => {
     const { recipeId } = req.params;
     const user_id = req.user.id;
-    const query = 'INSERT INTO userLikedRecipes(user_id, recipe_id) VALUES($1, $2) RETURNING *';
+    const query = 'INSERT INTO userlikedrecipes(user_id, recipe_id) VALUES($1, $2) RETURNING *';
     const values = [user_id, recipeId];
     await client.query('BEGIN')
     try {
@@ -30,7 +30,7 @@ recipeRouter.post('/recipes/:recipeId/liked', authenticate, async (req, res) => 
 recipeRouter.delete('/recipes/:recipeid/liked', authenticate, async (req, res) => {
     const { recipeId } = req.params
     const userId = req.user?.id
-    const deleteQuery = 'DELETE FROM userLikedRecipes WHERE user_id = $1 and recipe_id = $2 returning *';
+    const deleteQuery = 'DELETE FROM userlikedrecipes WHERE user_id = $1 and recipe_id = $2 returning *';
     const deleteValues = [userId, recipeId]
 
     try {
@@ -45,7 +45,7 @@ recipeRouter.delete('/recipes/:recipeid/liked', authenticate, async (req, res) =
 //getting user liked recipe
 recipeRouter.get('/users/:userid/liked', async (req, res) => {
     const userId = req.params.userid
-    const query = 'SELECT * FROM userLikedRecipes as ul JOIN recipes as r on ul.recipe_id = r.id WHERE ul.user_id = $1';
+    const query = 'SELECT * FROM userlikedrecipes as ul JOIN recipes as r on ul.recipe_id = r.id WHERE ul.user_id = $1';
     const values = [userId];
     try {
         const response = await client.query(query, values);
