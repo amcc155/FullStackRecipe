@@ -31,6 +31,8 @@ import HomeIcon from "@mui/icons-material/Home";
 const DrawerList = () => {
   const { user, logout } = useAuth();
 
+  const { user, logout } = useAuth();
+
   return (
     <Box
       sx={{
@@ -38,7 +40,11 @@ const DrawerList = () => {
         display: "flex",
         flexDirection: "column",
         alignItems: "",
+        alignItems: "",
         mt: 2,
+        justifyContent: "space-between",
+        height: "100%",
+        pb: 5,
         justifyContent: "space-between",
         height: "100%",
         pb: 5,
@@ -66,6 +72,7 @@ const DrawerList = () => {
           <ListItemText primary="Daily Random" />
         </ListItem>
         <Divider />
+        <Divider />
         <ListItem button component={Link} to="#">
           <ListItemIcon>
             <PersonSearchIcon />
@@ -73,6 +80,17 @@ const DrawerList = () => {
           <ListItemText primary="Search Users" />
         </ListItem>
       </List>
+
+      {user && (
+        <List>
+          <ListItem button onClick={logout}>
+            <ListItemIcon>
+              <LogoutIcon />
+            </ListItemIcon>
+            <ListItemText primary="Logout" />
+          </ListItem>
+        </List>
+      )}
 
       {user && (
         <List>
