@@ -13,12 +13,7 @@ app.use(express.json());
 
 
 
-// Serve static files from /public
-app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
 
 const api_key = process.env.RAPIDAPI_KEY
 
@@ -123,6 +118,13 @@ app.use('/user', userRouter)
 app.use('/', reviewRouter)
 app.use('/', collectionsRouter)
 app.use('/', recipeRouter)
+
+// Serve static files from /public
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
