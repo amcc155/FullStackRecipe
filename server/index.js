@@ -126,11 +126,13 @@ app.use('/', reviewRouter)
 app.use('/', collectionsRouter)
 app.use('/', recipeRouter)
 
-app.use(express.static(path.join(__dirname, '../client/build')));
-app.get('*', (_req, res) =>
-    res.sendFile(path.join(__dirname, '../client/build', 'index.html'))
-);
+// Serve static files from the build folder
+app.use(express.static(path.join(__dirname, 'build')));
 
+// For any other requests, send back React's index.html
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
