@@ -31,8 +31,6 @@ import HomeIcon from "@mui/icons-material/Home";
 const DrawerList = () => {
   const { user, logout } = useAuth();
 
-  const { user, logout } = useAuth();
-
   return (
     <Box
       sx={{
@@ -73,24 +71,13 @@ const DrawerList = () => {
         </ListItem>
         <Divider />
         <Divider />
-        <ListItem button component={Link} to="#">
+        {/* <ListItem button component={Link} to="#">
           <ListItemIcon>
             <PersonSearchIcon />
           </ListItemIcon>
           <ListItemText primary="Search Users" />
-        </ListItem>
+        </ListItem> */}
       </List>
-
-      {user && (
-        <List>
-          <ListItem button onClick={logout}>
-            <ListItemIcon>
-              <LogoutIcon />
-            </ListItemIcon>
-            <ListItemText primary="Logout" />
-          </ListItem>
-        </List>
-      )}
 
       {user && (
         <List>
@@ -147,7 +134,6 @@ const NavBar = () => {
               <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                 News
               </Typography>
-              <Button color="inherit">Login</Button>
             </Toolbar>
           </AppBar>
           <Drawer open={open} onClose={() => toggleDrawer(false)}>

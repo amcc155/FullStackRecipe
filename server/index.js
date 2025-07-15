@@ -18,6 +18,12 @@ app.use(express.json());
 const api_key = process.env.RAPIDAPI_KEY
 
 
+
+app.use(cors({
+    origin: "http://localhost:3000",
+}));
+
+
 app.get('/api/random/recipes', async (req, res) => {
     try {
         const response = await axios.get("https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/random", {

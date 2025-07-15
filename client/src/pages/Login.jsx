@@ -28,9 +28,13 @@ const Login = () => {
     setLoginInfo({ ...loginInfo, [e.target.name]: e.target.value });
   };
 
-  const handleLogin = async () => {
+  const handleLogin = async (test = false) => {
+    let finalLogInInfo = test
+      ? { username: "test", password: "test" }
+      : loginInfo;
+
     try {
-      await login(loginInfo);
+      await login(finalLogInInfo);
       navigate("/");
     } catch (err) {
       setLoginError(err.message);
@@ -97,6 +101,16 @@ const Login = () => {
           sx={{ mt: 2 }}
         >
           Login
+        </Button>
+
+        <Button
+          variant="contained"
+          color="white"
+          onClick={handleLogin}
+          sx={{ mt: 2 }}
+        >
+          {" "}
+          Login In as Test User{" "}
         </Button>
 
         <Typography component="p">
