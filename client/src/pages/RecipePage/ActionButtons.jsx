@@ -154,27 +154,8 @@ const ActionButtons = ({ recipe }) => {
     },
   });
 
-  // Handle outside click to close the popup
-  const handleOutsideClick = (e) => {
-    if (
-      e.target &&
-      addCollectionButtonRef.current &&
-      !addCollectionButtonRef.current.contains(e.target)
-    ) {
-      setIsPopupOpen(false);
-    }
-  };
-
-  // Add event listener for outside click
-  useEffect(() => {
-    if (isPopupOpen) {
-      window.addEventListener("click", handleOutsideClick);
-    } else {
-      window.removeEventListener("click", handleOutsideClick);
-    }
-  }, [isPopupOpen]);
-
-  const handleAddCollectionClick = () => {
+  const handleAddCollectionClick = (e) => {
+    e.stopPropagation();
     setIsPopupOpen(!isPopupOpen);
   };
 
@@ -187,7 +168,11 @@ const ActionButtons = ({ recipe }) => {
         position: "relative",
       }}
     >
-      <AddRecipeToCollectionModal isOpen={isPopupOpen} recipe={recipe} />
+      <AddRecipeToCollectionModal
+        isOpen={isPopupOpen}
+        setIsPopupOpen={setIsPopupOpen}
+        recipe={recipe}
+      />
       <AddCircleOutlineIcon
         sx={{ cursor: "pointer" }}
         ref={addCollectionButtonRef}

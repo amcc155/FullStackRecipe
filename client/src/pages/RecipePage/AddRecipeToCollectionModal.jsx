@@ -8,19 +8,27 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../context/AuthContext";
+import AddNewCollectionModal from "../../components/AddNewCollectionModal";
 
-const AddRecipeToCollectionModal = ({ isOpen, recipe }) => {
+const AddRecipeToCollectionModal = ({
+  isOpen,
+  recipe,
+  setIsPopupOpen,
+  addCollectionButtonRef,
+}) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [showAddForm, setShowAddForm] = useState(false);
+  const popupRef = useRef();
 
   const fetchCollections = async () => {
     const response = await axios.get(
@@ -33,6 +41,19 @@ const AddRecipeToCollectionModal = ({ isOpen, recipe }) => {
     );
     return response.data.collections;
   };
+
+  // Add event listener for outside click
+  useEffect(() => {
+    // Handle outside click to close the popup
+    const handleOutsideClick = (e) => {
+      setIsPopupOpen(false);
+    };
+
+    if (isOpen) {
+      window.addEventListener("click", handleOutsideClick);
+    }
+    return () => window.removeEventListener("click", handleOutsideClick);
+  }, [isOpen]);
 
   const {
     data: collections,
@@ -63,10 +84,19 @@ const AddRecipeToCollectionModal = ({ isOpen, recipe }) => {
     },
   });
 
+  const handleAddNewRecipe = (collection, recipe) => {
+    mutation.mutate({
+      recipeId: recipe.id,
+      collectionId: collection.id,
+      recipeName: recipe.title,
+      recipeUrl: recipe.image,
+    });
+  };
   return (
     <>
       {isOpen && (
         <Box
+          ref={popupRef}
           sx={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))",
@@ -137,14 +167,7 @@ const AddRecipeToCollectionModal = ({ isOpen, recipe }) => {
                 }}
               >
                 <Button
-                  onClick={() =>
-                    mutation.mutate({
-                      recipeId: recipe.id,
-                      collectionId: collection.id,
-                      recipeName: recipe.title,
-                      recipeUrl: recipe.image,
-                    })
-                  }
+                  onClick={() => handleAddNewRecipe(collection, recipe)}
                   variant="contained"
                   startIcon={<AddIcon />}
                   sx={{ bgcolor: "white", color: "black" }}
@@ -155,6 +178,8 @@ const AddRecipeToCollectionModal = ({ isOpen, recipe }) => {
             </Box>
           ))}
           <Box
+            role="button"
+            tabIndex={0}
             sx={{
               backgroundColor: "red",
               width: "100%",
@@ -163,9 +188,14 @@ const AddRecipeToCollectionModal = ({ isOpen, recipe }) => {
               alignItems: "center",
               justifyContent: "center",
             }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowAddForm(true);
+            }}
           >
             <AddIcon sx={{ color: "white" }} />
           </Box>
+          {showAddForm && <AddNewCollectionModal isModalOpen={showAddForm} />}
         </Box>
       )}
 
