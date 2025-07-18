@@ -29,7 +29,8 @@ const Login = () => {
   };
 
   const handleLogin = async (test = false) => {
-    let finalLogInInfo = test
+    console.log(test);
+    const finalLogInInfo = test
       ? { username: "test", password: "test" }
       : loginInfo;
 
@@ -79,6 +80,7 @@ const Login = () => {
                 id="username"
                 name="username"
                 aria-describedby="username-helper-text"
+                value={loginInfo.username}
               />
             </FormControl>
           </Grid>
@@ -90,14 +92,17 @@ const Login = () => {
                 id="password"
                 name="password"
                 type="password"
+                value={loginInfo.password}
               />
             </FormControl>
           </Grid>
         </Grid>
+
+        {/* log in and sign up buttons */}
         <Button
           variant="contained"
           color="primary"
-          onClick={handleLogin}
+          onClick={() => handleLogin()}
           sx={{ mt: 2 }}
         >
           Login
@@ -106,7 +111,7 @@ const Login = () => {
         <Button
           variant="contained"
           color="white"
-          onClick={handleLogin}
+          onClick={() => handleLogin(true)}
           sx={{ mt: 2 }}
         >
           {" "}
